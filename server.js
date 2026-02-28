@@ -16,6 +16,8 @@ const DEFAULT_INSTAGRAM_URL =
   "https://www.instagram.com/infracode_br?igsh=aDVoeHFkZWR1ZWd2";
 const DEFAULT_WHATSAPP_MESSAGE =
   "Ola! Vim pelo site da InfraCode e gostaria de conversar sobre um projeto.";
+const DEFAULT_WHATSAPP_CLIENT_ACK_MESSAGE =
+  "Recebemos sua mensagem na InfraCode. Em breve nosso time entra em contato.";
 
 const MIME_TYPES = {
   ".css": "text/css; charset=utf-8",
@@ -58,6 +60,24 @@ const sendText = (res, statusCode, message) => {
 
 const sanitizePhone = (value) => value.replace(/\D/g, "");
 
+const normalizePhoneForWhatsApp = (value) => {
+  const digits = sanitizePhone(value ?? "");
+
+  if (!digits) {
+    return "";
+  }
+
+  if (digits.startsWith("55")) {
+    return digits;
+  }
+
+  if (digits.length === 10 || digits.length === 11) {
+    return `55${digits}`;
+  }
+
+  return digits;
+};
+
 const formatWhatsAppDisplay = (digits) => {
   if (!digits) return "WhatsApp";
   if (digits.startsWith("55") && digits.length >= 12) {
@@ -91,6 +111,32 @@ const getPublicContactConfig = () => {
     whatsappDisplay: formatWhatsAppDisplay(whatsappNumber),
     whatsappNumber,
     whatsappUrl,
+  };
+};
+
+const getWhatsAppRuntimeConfig = () => {
+  const accessToken = process.env.WHATSAPP_CLOUD_ACCESS_TOKEN?.trim() ?? "";
+  const phoneNumberId = process.env.WHATSAPP_CLOUD_PHONE_NUMBER_ID?.trim() ?? "";
+  const ownerNumber = normalizePhoneForWhatsApp(process.env.WHATSAPP_NOTIFY_TO ?? "");
+  const clientAckEnabled =
+    (process.env.WHATSAPP_SEND_CLIENT_ACK ?? "true").trim().toLowerCase() !== "false";
+  const clientAckMessage = (
+    process.env.WHATSAPP_CLIENT_ACK_MESSAGE ?? DEFAULT_WHATSAPP_CLIENT_ACK_MESSAGE
+  ).trim();
+  const clientAckTemplateName =
+    process.env.WHATSAPP_CLIENT_ACK_TEMPLATE_NAME?.trim() ?? "";
+  const clientAckTemplateLanguage =
+    process.env.WHATSAPP_CLIENT_ACK_TEMPLATE_LANG?.trim() || "pt_BR";
+
+  return {
+    accessToken,
+    clientAckEnabled,
+    clientAckMessage,
+    clientAckTemplateLanguage,
+    clientAckTemplateName,
+    configured: Boolean(accessToken && phoneNumberId),
+    ownerNumber,
+    phoneNumberId,
   };
 };
 
@@ -129,6 +175,9 @@ const parseContactPayload = async (req) => {
 
   const name = typeof data.name === "string" ? data.name.trim() : "";
   const email = typeof data.email === "string" ? data.email.trim() : "";
+  const phoneRaw = typeof data.phone === "string" ? data.phone.trim() : "";
+  const phoneDigits = sanitizePhone(phoneRaw);
+  const phone = normalizePhoneForWhatsApp(phoneRaw);
   const message = typeof data.message === "string" ? data.message.trim() : "";
 
   const errors = [];
@@ -141,12 +190,16 @@ const parseContactPayload = async (req) => {
     errors.push("Informe um e-mail valido.");
   }
 
+  if (phoneDigits.length < 10 || phoneDigits.length > 15) {
+    errors.push("Informe um WhatsApp valido com DDD.");
+  }
+
   if (message.length < 10 || message.length > 2000) {
     errors.push("A mensagem precisa ter entre 10 e 2000 caracteres.");
   }
 
   return {
-    data: { name, email, message },
+    data: { name, email, phone, message },
     errors,
   };
 };
@@ -177,6 +230,63 @@ const sendContactToWebhook = async (contact) => {
   return { configured: true, delivered: true, provider: "webhook" };
 };
 
+const sendContactWithBaileysApi = async (contact) => {
+  const apiUrlRaw = process.env.WHATSAPP_BAILEYS_API_URL?.trim();
+  const apiKey = process.env.WHATSAPP_BAILEYS_API_KEY?.trim();
+
+  if (!apiUrlRaw || !apiKey) {
+    return {
+      configured: false,
+      errors: [],
+      clientSent: false,
+      internalSent: false,
+      provider: "baileys-api",
+    };
+  }
+
+  const apiUrl = apiUrlRaw.replace(/\/+$/, "");
+  const response = await fetch(`${apiUrl}/lead`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-api-key": apiKey,
+    },
+    body: JSON.stringify({
+      name: contact.name,
+      email: contact.email,
+      phone: contact.phone,
+      message: contact.message,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(
+      `Baileys API responded with status ${response.status}: ${errorText}`,
+    );
+  }
+
+  const payload = await response.json().catch(() => null);
+  const data = payload && typeof payload === "object" && "data" in payload ? payload.data : null;
+
+  return {
+    configured: true,
+    errors:
+      data && typeof data === "object" && "errors" in data && Array.isArray(data.errors)
+        ? data.errors
+        : [],
+    clientSent:
+      data && typeof data === "object" && "clientSent" in data
+        ? Boolean(data.clientSent)
+        : false,
+    internalSent:
+      data && typeof data === "object" && "internalSent" in data
+        ? Boolean(data.internalSent)
+        : false,
+    provider: "baileys-api",
+  };
+};
+
 const sendContactWithResend = async (contact, publicConfig) => {
   const apiKey = process.env.RESEND_API_KEY?.trim();
   const from = process.env.CONTACT_EMAIL_FROM?.trim();
@@ -202,6 +312,7 @@ const sendContactWithResend = async (contact, publicConfig) => {
         "",
         `Nome: ${contact.name}`,
         `Email: ${contact.email}`,
+        `Telefone/WhatsApp: ${contact.phone}`,
         "",
         "Mensagem:",
         contact.message,
@@ -215,6 +326,145 @@ const sendContactWithResend = async (contact, publicConfig) => {
   }
 
   return { configured: true, delivered: true, provider: "resend" };
+};
+
+const sendWhatsAppTextMessage = async (runtimeConfig, to, text) => {
+  const response = await fetch(
+    `https://graph.facebook.com/v22.0/${runtimeConfig.phoneNumberId}/messages`,
+    {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${runtimeConfig.accessToken}`,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        messaging_product: "whatsapp",
+        recipient_type: "individual",
+        to,
+        type: "text",
+        text: {
+          preview_url: false,
+          body: text,
+        },
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(
+      `WhatsApp API responded with status ${response.status}: ${errorText}`,
+    );
+  }
+};
+
+const sendWhatsAppTemplateMessage = async (
+  runtimeConfig,
+  to,
+  templateName,
+  languageCode,
+) => {
+  const response = await fetch(
+    `https://graph.facebook.com/v22.0/${runtimeConfig.phoneNumberId}/messages`,
+    {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${runtimeConfig.accessToken}`,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        messaging_product: "whatsapp",
+        recipient_type: "individual",
+        to,
+        type: "template",
+        template: {
+          name: templateName,
+          language: {
+            code: languageCode,
+          },
+        },
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(
+      `WhatsApp template API responded with status ${response.status}: ${errorText}`,
+    );
+  }
+};
+
+const sendWhatsAppNotifications = async (contact) => {
+  const runtimeConfig = getWhatsAppRuntimeConfig();
+
+  if (!runtimeConfig.configured) {
+    return {
+      configured: false,
+      errors: [],
+      clientSent: false,
+      internalSent: false,
+      provider: "whatsapp",
+    };
+  }
+
+  const errors = [];
+  let internalSent = false;
+  let clientSent = false;
+
+  if (runtimeConfig.ownerNumber) {
+    try {
+      await sendWhatsAppTextMessage(
+        runtimeConfig,
+        runtimeConfig.ownerNumber,
+        [
+          "Novo contato pelo site da InfraCode",
+          "",
+          `Nome: ${contact.name}`,
+          `Email: ${contact.email}`,
+          `WhatsApp: ${contact.phone}`,
+          "",
+          "Mensagem:",
+          contact.message,
+        ].join("\n"),
+      );
+      internalSent = true;
+    } catch (error) {
+      errors.push("owner");
+      console.error("[contact:whatsapp:owner:error]", error);
+    }
+  }
+
+  if (runtimeConfig.clientAckEnabled && contact.phone) {
+    try {
+      if (runtimeConfig.clientAckTemplateName) {
+        await sendWhatsAppTemplateMessage(
+          runtimeConfig,
+          contact.phone,
+          runtimeConfig.clientAckTemplateName,
+          runtimeConfig.clientAckTemplateLanguage,
+        );
+      } else {
+        await sendWhatsAppTextMessage(
+          runtimeConfig,
+          contact.phone,
+          `Oi, ${contact.name}! ${runtimeConfig.clientAckMessage}`,
+        );
+      }
+      clientSent = true;
+    } catch (error) {
+      errors.push("client");
+      console.error("[contact:whatsapp:client:error]", error);
+    }
+  }
+
+  return {
+    configured: true,
+    errors,
+    clientSent,
+    internalSent,
+    provider: "whatsapp",
+  };
 };
 
 const sendStaticFile = async (res, filePath, method) => {
@@ -292,6 +542,7 @@ const server = createServer(async (req, res) => {
       const contact = payload.data;
       const publicConfig = getPublicContactConfig();
       let deliveryResult = null;
+      let deliveryError = null;
 
       try {
         const resendResult = await sendContactWithResend(contact, publicConfig);
@@ -304,19 +555,49 @@ const server = createServer(async (req, res) => {
           }
         }
       } catch (error) {
+        deliveryError = error;
         console.error("[contact:delivery:error]", error);
-        sendJson(res, 502, {
+      }
+
+      let whatsappResult = {
+        configured: false,
+        errors: [],
+        clientSent: false,
+        internalSent: false,
+        provider: "none",
+      };
+
+      try {
+        const baileysApiResult = await sendContactWithBaileysApi(contact);
+        if (baileysApiResult.configured) {
+          whatsappResult = baileysApiResult;
+        } else {
+          whatsappResult = await sendWhatsAppNotifications(contact);
+        }
+      } catch (error) {
+        console.error("[contact:baileys-api:error]", error);
+        whatsappResult = await sendWhatsAppNotifications(contact);
+      }
+
+      const hasConfiguredChannel = Boolean(deliveryResult?.configured) || whatsappResult.configured;
+      const hasDeliveredChannel =
+        Boolean(deliveryResult?.delivered) ||
+        whatsappResult.internalSent ||
+        whatsappResult.clientSent;
+
+      if (!hasConfiguredChannel) {
+        sendJson(res, 503, {
           ok: false,
-          message: "Nao foi possivel enviar a mensagem agora. Tente novamente.",
+          message:
+            "Canal de envio nao configurado. Configure Resend, webhook, WhatsApp Baileys API ou WhatsApp Cloud API.",
         });
         return;
       }
 
-      if (!deliveryResult?.configured) {
-        sendJson(res, 503, {
+      if (!hasDeliveredChannel) {
+        sendJson(res, 502, {
           ok: false,
-          message:
-            "Canal de envio nao configurado. Configure RESEND_API_KEY/CONTACT_EMAIL_FROM ou CONTACT_WEBHOOK_URL.",
+          message: "Nao foi possivel enviar a mensagem agora. Tente novamente.",
         });
         return;
       }
@@ -328,7 +609,12 @@ const server = createServer(async (req, res) => {
           message: `${contact.message.slice(0, 200)}${
             contact.message.length > 200 ? "..." : ""
           }`,
-          provider: deliveryResult.provider,
+          provider: deliveryResult?.provider ?? "none",
+          deliveryError: Boolean(deliveryError),
+          whatsappProvider: whatsappResult.provider,
+          whatsappClientSent: whatsappResult.clientSent,
+          whatsappInternalSent: whatsappResult.internalSent,
+          whatsappErrors: whatsappResult.errors,
         }),
       );
 

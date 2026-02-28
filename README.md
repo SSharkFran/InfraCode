@@ -34,16 +34,20 @@ Payload:
 {
   "name": "Seu nome",
   "email": "email@dominio.com",
+  "phone": "5568999999999",
   "message": "Sua mensagem"
 }
 ```
 
 Comportamento:
 
-- Valida nome, email e mensagem.
+- Valida nome, email, WhatsApp e mensagem.
 - Retorna erro `422` para dados invalidos.
 - Envia pela API da Resend quando `RESEND_API_KEY` e `CONTACT_EMAIL_FROM` estiverem configuradas.
 - Se Resend nao estiver configurado, usa `CONTACT_WEBHOOK_URL` como fallback.
+- Recomendado: integra com API separada em Baileys (`WHATSAPP_BAILEYS_API_URL`).
+- Opcionalmente usa WhatsApp Cloud API (Meta) como fallback.
+- Para confirmacao automatica ao cliente, pode usar texto simples ou template aprovado.
 - Se nenhum canal estiver configurado, retorna `503`.
 
 Endpoint para dados publicos de contato (lidos de variaveis de ambiente):
@@ -72,8 +76,21 @@ Variaveis de ambiente opcionais:
 - `CONTACT_EMAIL_FROM`: remetente validado na Resend (ex.: `site@seudominio.com`).
 - `CONTACT_EMAIL_TO`: destinatario dos leads (se vazio, usa `SITE_CONTACT_EMAIL`).
 - `CONTACT_WEBHOOK_URL`: fallback para envio via webhook.
+- `WHATSAPP_BAILEYS_API_URL`: URL da API separada em `services/whatsapp-api`.
+- `WHATSAPP_BAILEYS_API_KEY`: chave de autenticacao dessa API.
+- `WHATSAPP_CLOUD_ACCESS_TOKEN`: token da API Cloud do WhatsApp (Meta).
+- `WHATSAPP_CLOUD_PHONE_NUMBER_ID`: ID do numero da conta WhatsApp Business.
+- `WHATSAPP_NOTIFY_TO`: seu numero pessoal para receber aviso de novo lead.
+- `WHATSAPP_SEND_CLIENT_ACK`: `true/false` para enviar confirmacao ao cliente.
+- `WHATSAPP_CLIENT_ACK_MESSAGE`: mensagem de confirmacao automatica ao cliente.
+- `WHATSAPP_CLIENT_ACK_TEMPLATE_NAME`: template aprovado na Meta (opcional, recomendado).
+- `WHATSAPP_CLIENT_ACK_TEMPLATE_LANG`: idioma do template (ex.: `pt_BR`).
 - `PORT`: fornecida automaticamente pelo Railway.
 - Arquivo de referencia: `.env.example`
+
+Observacao sobre WhatsApp: para envios fora da janela de 24h, a Meta pode exigir templates aprovados.
+
+API separada (Baileys): veja [services/whatsapp-api/README.md](./services/whatsapp-api/README.md).
 
 Healthcheck:
 

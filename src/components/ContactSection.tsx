@@ -6,7 +6,7 @@ import { usePublicContactConfig } from "@/hooks/use-public-contact-config";
 
 const ContactSection = () => {
   const { toast } = useToast();
-  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [isSending, setIsSending] = useState(false);
   const publicConfig = usePublicContactConfig();
 
@@ -47,7 +47,7 @@ const ContactSection = () => {
           payload?.message ||
           "Entraremos em contato em breve. Obrigado pela mensagem!",
       });
-      setForm({ name: "", email: "", message: "" });
+      setForm({ name: "", email: "", phone: "", message: "" });
     } catch (error) {
       toast({
         title: "Erro ao enviar",
@@ -149,6 +149,20 @@ const ContactSection = () => {
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 transition-shadow"
                 placeholder="seu@email.com"
+              />
+            </div>
+            <div>
+              <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-1.5">
+                WhatsApp
+              </label>
+              <input
+                id="phone"
+                type="tel"
+                required
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 transition-shadow"
+                placeholder="(68) 99999-9999"
               />
             </div>
             <div>
