@@ -10,6 +10,7 @@ API separada para envio de mensagens via WhatsApp Web usando Baileys.
 - `GET /session/qr`: QR atual para login (`x-api-key`).
 - `GET /debug/config`: diagnostico de variaveis de envio (`x-api-key`).
 - `POST /session/reconnect`: reconecta a sessao (`x-api-key`).
+- `POST /contacts/check`: valida se um numero existe no WhatsApp (`x-api-key`).
 - `POST /messages/text`: envia mensagem (`x-api-key`).
 - `POST /lead`: envia lead para numero interno e confirmacao para cliente (`x-api-key`).
 

@@ -145,6 +145,7 @@ const dashboardHtml = `<!doctype html>
         <textarea id="msg" placeholder="Mensagem de teste">Teste InfraCode API OK</textarea>
       </div>
       <div class="actions">
+        <button id="checkBtn" class="secondary">Validar numero</button>
         <button id="sendBtn">Enviar mensagem</button>
       </div>
       <div id="sendOut" class="mono"></div>
@@ -156,6 +157,7 @@ const dashboardHtml = `<!doctype html>
     const statusBtn = document.getElementById("statusBtn");
     const qrBtn = document.getElementById("qrBtn");
     const reconnectBtn = document.getElementById("reconnectBtn");
+    const checkBtn = document.getElementById("checkBtn");
     const sendBtn = document.getElementById("sendBtn");
     const qrImg = document.getElementById("qrImg");
     const statusDot = document.getElementById("statusDot");
@@ -232,9 +234,23 @@ const dashboardHtml = `<!doctype html>
       sendOut.textContent = pretty(await response.json());
     }
 
+    async function checkContact() {
+      const payload = {
+        phone: toInput.value.trim(),
+      };
+
+      const response = await fetch("/contacts/check", {
+        method: "POST",
+        headers: headers(),
+        body: JSON.stringify(payload),
+      });
+      sendOut.textContent = pretty(await response.json());
+    }
+
     statusBtn.addEventListener("click", () => void refreshStatus());
     qrBtn.addEventListener("click", () => void refreshQr());
     reconnectBtn.addEventListener("click", () => void reconnect());
+    checkBtn.addEventListener("click", () => void checkContact());
     sendBtn.addEventListener("click", () => void sendTest());
 
     void refreshStatus();
@@ -371,20 +387,45 @@ const assertConnected = () => {
   }
 };
 
-const sendText = async (to, text) => {
+const checkWhatsAppNumber = async (phone) => {
   assertConnected();
 
-  const normalized = normalizePhone(to);
+  const normalized = normalizePhone(phone);
   if (!normalized) {
     const error = new Error("Numero de destino invalido.");
     error.statusCode = 422;
     throw error;
   }
 
-  const response = await socket.sendMessage(toJid(normalized), { text });
+  let result = [];
+  try {
+    result = await socket.onWhatsApp(normalized);
+  } catch {
+    result = [];
+  }
+
+  if (!Array.isArray(result) || result.length === 0 || !result[0]?.exists) {
+    const error = new Error("Numero nao possui conta ativa no WhatsApp.");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return {
+    exists: true,
+    jid: result[0]?.jid ?? toJid(normalized),
+    normalized,
+  };
+};
+
+const sendText = async (to, text) => {
+  assertConnected();
+
+  const numberInfo = await checkWhatsAppNumber(to);
+
+  const response = await socket.sendMessage(numberInfo.jid, { text });
   return {
     messageId: response?.key?.id ?? null,
-    to: normalized,
+    to: numberInfo.normalized,
   };
 };
 
@@ -497,6 +538,26 @@ app.post("/messages/text", apiKeyGuard, async (req, res) => {
     res.status(statusCode).json({
       ok: false,
       message: error instanceof Error ? error.message : "Falha ao enviar mensagem.",
+    });
+  }
+});
+
+app.post("/contacts/check", apiKeyGuard, async (req, res) => {
+  try {
+    const phone = typeof req.body?.phone === "string" ? req.body.phone : "";
+    const data = await checkWhatsAppNumber(phone);
+    res.status(200).json({
+      ok: true,
+      data,
+    });
+  } catch (error) {
+    const statusCode =
+      typeof error === "object" && error !== null && "statusCode" in error
+        ? error.statusCode
+        : 500;
+    res.status(statusCode).json({
+      ok: false,
+      message: error instanceof Error ? error.message : "Falha ao validar contato.",
     });
   }
 });
