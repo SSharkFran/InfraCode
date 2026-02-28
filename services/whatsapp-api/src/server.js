@@ -26,6 +26,8 @@ const CLIENT_ACK_TEXT = (
   process.env.CLIENT_ACK_TEXT ??
   "Recebemos sua mensagem na InfraCode. Em breve nosso time entra em contato."
 ).trim();
+const REQUIRE_INTERNAL_NOTIFY =
+  (process.env.REQUIRE_INTERNAL_NOTIFY ?? "false").trim().toLowerCase() !== "false";
 
 let socket = null;
 let reconnectTimer = null;
@@ -64,6 +66,182 @@ const normalizePhone = (value) => {
 };
 
 const toJid = (phone) => `${normalizePhone(phone)}@s.whatsapp.net`;
+
+const dashboardHtml = `<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>InfraCode WhatsApp API</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #f97316;
+      --line: #1f2937;
+    }
+    * { box-sizing: border-box; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+    body { margin: 0; background: linear-gradient(180deg, #020617, var(--bg)); color: var(--text); }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 24px 16px 48px; }
+    .card { background: color-mix(in oklab, var(--panel) 92%, black); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+    h1 { margin: 0 0 14px; font-size: 22px; }
+    h2 { margin: 0 0 8px; font-size: 16px; }
+    p { margin: 0; color: var(--muted); }
+    .row { display: grid; gap: 10px; margin-top: 10px; }
+    .row.two { grid-template-columns: 1fr 1fr; }
+    input, textarea, button {
+      width: 100%; border-radius: 10px; border: 1px solid #334155; background: #0b1220; color: var(--text); padding: 10px 12px;
+    }
+    textarea { min-height: 80px; resize: vertical; }
+    button { background: var(--accent); color: white; border: none; cursor: pointer; font-weight: 600; }
+    button.secondary { background: #1f2937; }
+    .actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; white-space: pre-wrap; background: #020617; border: 1px solid #1e293b; border-radius: 10px; padding: 10px; min-height: 80px; }
+    .status { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; margin-top: 8px; }
+    .dot { width: 10px; height: 10px; border-radius: 999px; background: #ef4444; }
+    .dot.ok { background: #22c55e; }
+    img { max-width: 280px; width: 100%; border-radius: 10px; border: 1px solid #334155; background: #fff; padding: 8px; }
+    @media (max-width: 860px) {
+      .row.two, .actions { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>InfraCode WhatsApp API</h1>
+    <div class="card">
+      <h2>Autenticacao</h2>
+      <p>Use a mesma chave configurada em <span class="mono">WHATSAPP_API_KEY</span>.</p>
+      <div class="row">
+        <input id="apiKey" placeholder="x-api-key" />
+      </div>
+      <div class="actions">
+        <button id="statusBtn" class="secondary">Atualizar Status</button>
+        <button id="qrBtn" class="secondary">Atualizar QR</button>
+        <button id="reconnectBtn" class="secondary">Reconectar Sessao</button>
+      </div>
+      <div class="status">
+        <span id="statusDot" class="dot"></span>
+        <span id="statusText">Status desconhecido</span>
+      </div>
+      <div class="row two">
+        <div>
+          <h2 style="margin-top:12px;">QR atual</h2>
+          <img id="qrImg" alt="QR Code" />
+        </div>
+        <div>
+          <h2 style="margin-top:12px;">Diagnostico</h2>
+          <div id="debugOut" class="mono"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Teste de envio</h2>
+      <div class="row">
+        <input id="to" placeholder="Numero destino (ex: 5568999999999)" />
+        <textarea id="msg" placeholder="Mensagem de teste">Teste InfraCode API OK</textarea>
+      </div>
+      <div class="actions">
+        <button id="sendBtn">Enviar mensagem</button>
+      </div>
+      <div id="sendOut" class="mono"></div>
+    </div>
+  </main>
+
+  <script>
+    const apiKeyInput = document.getElementById("apiKey");
+    const statusBtn = document.getElementById("statusBtn");
+    const qrBtn = document.getElementById("qrBtn");
+    const reconnectBtn = document.getElementById("reconnectBtn");
+    const sendBtn = document.getElementById("sendBtn");
+    const qrImg = document.getElementById("qrImg");
+    const statusDot = document.getElementById("statusDot");
+    const statusText = document.getElementById("statusText");
+    const debugOut = document.getElementById("debugOut");
+    const sendOut = document.getElementById("sendOut");
+    const toInput = document.getElementById("to");
+    const msgInput = document.getElementById("msg");
+
+    const saved = localStorage.getItem("infracode-wa-api-key");
+    if (saved) apiKeyInput.value = saved;
+
+    function headers() {
+      const key = apiKeyInput.value.trim();
+      localStorage.setItem("infracode-wa-api-key", key);
+      return { "x-api-key": key, "content-type": "application/json" };
+    }
+
+    function pretty(obj) {
+      return JSON.stringify(obj, null, 2);
+    }
+
+    async function refreshStatus() {
+      const [statusRes, debugRes] = await Promise.all([
+        fetch("/session/status", { headers: headers() }),
+        fetch("/debug/config", { headers: headers() }),
+      ]);
+      const statusPayload = await statusRes.json();
+      const debugPayload = await debugRes.json();
+
+      const connected = Boolean(statusPayload?.data?.connected);
+      statusDot.className = connected ? "dot ok" : "dot";
+      statusText.textContent = connected
+        ? "Conectado"
+        : (statusPayload?.data?.connecting ? "Conectando..." : "Desconectado");
+
+      debugOut.textContent = pretty({
+        status: statusPayload,
+        config: debugPayload,
+      });
+    }
+
+    async function refreshQr() {
+      const response = await fetch("/session/qr", { headers: headers() });
+      const payload = await response.json();
+      qrImg.src = payload?.data?.qrDataUrl || "";
+      if (!payload?.data?.qrDataUrl) {
+        qrImg.alt = "Sem QR disponivel";
+      }
+    }
+
+    async function reconnect() {
+      const response = await fetch("/session/reconnect", {
+        method: "POST",
+        headers: headers(),
+      });
+      const payload = await response.json();
+      debugOut.textContent = pretty(payload);
+      await refreshStatus();
+      await refreshQr();
+    }
+
+    async function sendTest() {
+      const payload = {
+        to: toInput.value.trim(),
+        message: msgInput.value,
+      };
+
+      const response = await fetch("/messages/text", {
+        method: "POST",
+        headers: headers(),
+        body: JSON.stringify(payload),
+      });
+      sendOut.textContent = pretty(await response.json());
+    }
+
+    statusBtn.addEventListener("click", () => void refreshStatus());
+    qrBtn.addEventListener("click", () => void refreshQr());
+    reconnectBtn.addEventListener("click", () => void reconnect());
+    sendBtn.addEventListener("click", () => void sendTest());
+
+    void refreshStatus();
+    void refreshQr();
+  </script>
+</body>
+</html>`;
 
 const apiKeyGuard = (req, res, next) => {
   if (!WHATSAPP_API_KEY) {
@@ -231,6 +409,22 @@ app.get("/health", (_req, res) => {
   });
 });
 
+app.get("/", (_req, res) => {
+  res.status(200).type("html").send(dashboardHtml);
+});
+
+app.get("/debug/config", apiKeyGuard, (_req, res) => {
+  const ownerNumber = normalizePhone(OWNER_NOTIFY_TO);
+  res.status(200).json({
+    ok: true,
+    data: {
+      clientAckEnabled: CLIENT_ACK_ENABLED,
+      ownerNotifyTo: ownerNumber,
+      requireInternalNotify: REQUIRE_INTERNAL_NOTIFY,
+    },
+  });
+});
+
 app.get("/session/status", apiKeyGuard, (_req, res) => {
   res.status(200).json({
     ok: true,
@@ -346,6 +540,26 @@ app.post("/lead", apiKeyGuard, async (req, res) => {
     let internalSent = false;
     let clientSent = false;
     const sendErrors = [];
+    const ownerConfigured = Boolean(notifyTo);
+
+    if (!ownerConfigured) {
+      sendErrors.push("internal_not_configured");
+      if (REQUIRE_INTERNAL_NOTIFY) {
+        res.status(503).json({
+          ok: false,
+          message:
+            "OWNER_NOTIFY_TO nao configurado e REQUIRE_INTERNAL_NOTIFY=true.",
+          data: {
+            internalSent,
+            clientSent,
+            errors: sendErrors,
+            ownerConfigured,
+            requireInternalNotify: REQUIRE_INTERNAL_NOTIFY,
+          },
+        });
+        return;
+      }
+    }
 
     if (notifyTo) {
       try {
@@ -367,6 +581,21 @@ app.post("/lead", apiKeyGuard, async (req, res) => {
       }
     }
 
+    if (REQUIRE_INTERNAL_NOTIFY && !internalSent) {
+      res.status(502).json({
+        ok: false,
+        message: "Falha ao enviar notificacao para numero interno.",
+        data: {
+          internalSent,
+          clientSent,
+          errors: sendErrors,
+          ownerConfigured,
+          requireInternalNotify: REQUIRE_INTERNAL_NOTIFY,
+        },
+      });
+      return;
+    }
+
     if (!internalSent && !clientSent) {
       res.status(502).json({
         ok: false,
@@ -375,6 +604,8 @@ app.post("/lead", apiKeyGuard, async (req, res) => {
           internalSent,
           clientSent,
           errors: sendErrors,
+          ownerConfigured,
+          requireInternalNotify: REQUIRE_INTERNAL_NOTIFY,
         },
       });
       return;
@@ -386,6 +617,8 @@ app.post("/lead", apiKeyGuard, async (req, res) => {
         internalSent,
         clientSent,
         errors: sendErrors,
+        ownerConfigured,
+        requireInternalNotify: REQUIRE_INTERNAL_NOTIFY,
       },
     });
   } catch (error) {

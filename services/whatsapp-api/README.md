@@ -5,8 +5,10 @@ API separada para envio de mensagens via WhatsApp Web usando Baileys.
 ## Endpoints
 
 - `GET /health`: status simples.
+- `GET /`: painel web simples para status/QR/teste.
 - `GET /session/status`: status da sessao (`x-api-key`).
 - `GET /session/qr`: QR atual para login (`x-api-key`).
+- `GET /debug/config`: diagnostico de variaveis de envio (`x-api-key`).
 - `POST /session/reconnect`: reconecta a sessao (`x-api-key`).
 - `POST /messages/text`: envia mensagem (`x-api-key`).
 - `POST /lead`: envia lead para numero interno e confirmacao para cliente (`x-api-key`).
@@ -25,6 +27,7 @@ Recomendadas:
 - `OWNER_NOTIFY_TO`
 - `CLIENT_ACK_ENABLED`
 - `CLIENT_ACK_TEXT`
+- `REQUIRE_INTERNAL_NOTIFY` (`true` para falhar se nao notificar o numero interno)
 
 ## Execucao local
 
@@ -49,3 +52,5 @@ Observacao: o `nixpacks.toml` deste diretorio ja define setup/install/start.
 2. Chame `GET /session/qr` com `x-api-key: <WHATSAPP_API_KEY>`.
 3. Escaneie o QR com o WhatsApp.
 4. Confirme em `GET /session/status` que `connected=true`.
+
+Tambem pode fazer isso pelo painel em `GET /`.

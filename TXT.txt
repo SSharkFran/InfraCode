@@ -1,0 +1,8 @@
+xport WA_API_URL="https://api-infracode.up.railway.app"                                                            export WA_API_KEY="fqcl4zlt85"
+
+curl -s "$WA_API_URL/session/qr" \
+  -H "x-api-key: $WA_API_KEY" \
+| jq -r '.data.qrDataUrl' \
+| sed 's#^data:image/png;base64,##' \
+| base64 -d > qr.png
+

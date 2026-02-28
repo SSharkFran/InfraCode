@@ -91,6 +91,7 @@ Variaveis de ambiente opcionais:
 Observacao sobre WhatsApp: para envios fora da janela de 24h, a Meta pode exigir templates aprovados.
 
 API separada (Baileys): veja [services/whatsapp-api/README.md](./services/whatsapp-api/README.md).
+Ela inclui um painel web simples em `/` para status, QR e teste de envio.
 
 Healthcheck:
 
