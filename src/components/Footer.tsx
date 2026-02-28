@@ -68,6 +68,7 @@ const Footer = () => {
               </a>
             )}
             <p className="text-sm text-primary-foreground/60">Rio Branco, Acre — Brasil</p>
+            <p className="text-sm text-primary-foreground/60">CNPJ: 65.389.435/0001-15</p>
           </div>
         </div>
 
