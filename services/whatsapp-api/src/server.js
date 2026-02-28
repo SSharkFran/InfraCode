@@ -17,7 +17,7 @@ const app = express();
 const logger = pino({ level: process.env.LOG_LEVEL || "info" });
 
 const PORT = Number.parseInt(process.env.PORT ?? "3001", 10);
-const API_KEY = (process.env.API_KEY ?? "").trim();
+const WHATSAPP_API_KEY = (process.env.WHATSAPP_API_KEY ?? "").trim();
 const AUTH_DIR = (process.env.AUTH_DIR ?? ".baileys_auth").trim();
 const OWNER_NOTIFY_TO = (process.env.OWNER_NOTIFY_TO ?? "").trim();
 const CLIENT_ACK_ENABLED =
@@ -66,16 +66,16 @@ const normalizePhone = (value) => {
 const toJid = (phone) => `${normalizePhone(phone)}@s.whatsapp.net`;
 
 const apiKeyGuard = (req, res, next) => {
-  if (!API_KEY) {
+  if (!WHATSAPP_API_KEY) {
     res.status(503).json({
       ok: false,
-      message: "API_KEY nao configurada na WhatsApp API.",
+      message: "WHATSAPP_API_KEY nao configurada na WhatsApp API.",
     });
     return;
   }
 
   const providedKey = (req.header("x-api-key") ?? "").trim();
-  if (providedKey !== API_KEY) {
+  if (providedKey !== WHATSAPP_API_KEY) {
     res.status(401).json({
       ok: false,
       message: "Nao autorizado.",

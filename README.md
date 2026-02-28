@@ -77,7 +77,7 @@ Variaveis de ambiente opcionais:
 - `CONTACT_EMAIL_TO`: destinatario dos leads (se vazio, usa `SITE_CONTACT_EMAIL`).
 - `CONTACT_WEBHOOK_URL`: fallback para envio via webhook.
 - `WHATSAPP_BAILEYS_API_URL`: URL da API separada em `services/whatsapp-api`.
-- `WHATSAPP_BAILEYS_API_KEY`: chave de autenticacao dessa API.
+- `WHATSAPP_BAILEYS_API_KEY`: chave de autenticacao dessa API (`WHATSAPP_API_KEY` no service separado).
 - `WHATSAPP_CLOUD_ACCESS_TOKEN`: token da API Cloud do WhatsApp (Meta).
 - `WHATSAPP_CLOUD_PHONE_NUMBER_ID`: ID do numero da conta WhatsApp Business.
 - `WHATSAPP_NOTIFY_TO`: seu numero pessoal para receber aviso de novo lead.

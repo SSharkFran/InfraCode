@@ -17,7 +17,7 @@ Use o arquivo `.env.example` como base.
 
 Obrigatorias:
 
-- `API_KEY`
+- `WHATSAPP_API_KEY`
 
 Recomendadas:
 
@@ -46,6 +46,6 @@ Observacao: o `nixpacks.toml` deste diretorio ja define setup/install/start.
 ## Fluxo inicial de login
 
 1. Suba o service.
-2. Chame `GET /session/qr` com `x-api-key`.
+2. Chame `GET /session/qr` com `x-api-key: <WHATSAPP_API_KEY>`.
 3. Escaneie o QR com o WhatsApp.
 4. Confirme em `GET /session/status` que `connected=true`.
