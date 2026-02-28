@@ -41,9 +41,9 @@ const Header = () => {
           : "bg-transparent"
       }`}
     >
-      <div className="container mx-auto flex items-center justify-between h-24 md:h-32 lg:h-36 px-4">
+      <div className="container mx-auto flex items-center justify-between h-24 md:h-36 lg:h-40 px-4">
         <a href="#inicio" onClick={(e) => handleClick(e, "#inicio")} className="flex items-center">
-          <img src={scrolled ? logoLight : logoDark} alt="InfraCode Tecnologia" className="h-20 md:h-28 lg:h-32 object-contain transition-all duration-300" />
+          <img src={scrolled ? logoLight : logoDark} alt="InfraCode Tecnologia" className="h-20 md:h-32 lg:h-36 object-contain transition-all duration-300" />
         </a>
 
         {/* Desktop nav */}

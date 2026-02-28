@@ -17,7 +17,7 @@ const Footer = () => {
       <div className="container mx-auto">
         <div className="grid md:grid-cols-3 gap-10 items-start mb-12">
           <div>
-            <img src={logoDark} alt="InfraCode Tecnologia" className="h-20 md:h-28 lg:h-32 mb-5 object-contain" />
+            <img src={logoDark} alt="InfraCode Tecnologia" className="h-20 md:h-32 lg:h-36 mb-5 object-contain" />
             <p className="text-primary-foreground/60 text-sm leading-relaxed max-w-xs">
               Startup acreana focada em criar soluções digitais modernas, eficientes e acessíveis.
             </p>
