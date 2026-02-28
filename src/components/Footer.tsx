@@ -1,6 +1,8 @@
+import type { MouseEvent } from "react";
 import logoDark from "@/assets/infracode-logo-dark.png";
+import { usePublicContactConfig } from "@/hooks/use-public-contact-config";
 
-const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+const handleClick = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
   e.preventDefault();
   const el = document.querySelector(href);
   if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -8,6 +10,7 @@ const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
 
 const Footer = () => {
   const year = new Date().getFullYear();
+  const publicConfig = usePublicContactConfig();
 
   return (
     <footer className="bg-primary text-primary-foreground py-16 px-4">
@@ -49,7 +52,21 @@ const Footer = () => {
             <h4 className="font-heading font-semibold text-sm mb-4 uppercase tracking-wider text-primary-foreground/80">
               Contato
             </h4>
-            <p className="text-sm text-primary-foreground/60 mb-1">contato@infracode.tech</p>
+            {publicConfig.contactEmail && (
+              <p className="text-sm text-primary-foreground/60 mb-1">
+                {publicConfig.contactEmail}
+              </p>
+            )}
+            {publicConfig.instagramUrl && (
+              <a
+                href={publicConfig.instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-primary-foreground/60 hover:text-accent transition-colors mb-1 inline-block"
+              >
+                Instagram
+              </a>
+            )}
             <p className="text-sm text-primary-foreground/60">Rio Branco, Acre — Brasil</p>
           </div>
         </div>

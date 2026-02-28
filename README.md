@@ -1,73 +1,93 @@
-# Welcome to your Lovable project
+# InfraCode - Website Institucional
 
-## Project info
+Site institucional em React + Vite, com servidor Node para deploy no Railway.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Stack
 
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
+- React
 - Vite
 - TypeScript
-- React
-- shadcn-ui
 - Tailwind CSS
 
-## How can I deploy this project?
+## Scripts
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+```sh
+npm run dev      # desenvolvimento (Vite)
+npm run build    # gera dist/
+npm run start    # servidor de producao (serve dist + API)
+npm run test     # testes unitarios
+npm run lint     # lint
+```
 
-## Can I connect a custom domain to my Lovable project?
+## API de Contato
 
-Yes, you can!
+Endpoint de formulario:
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+```http
+POST /api/contact
+Content-Type: application/json
+```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Payload:
+
+```json
+{
+  "name": "Seu nome",
+  "email": "email@dominio.com",
+  "message": "Sua mensagem"
+}
+```
+
+Comportamento:
+
+- Valida nome, email e mensagem.
+- Retorna erro `422` para dados invalidos.
+- Envia pela API da Resend quando `RESEND_API_KEY` e `CONTACT_EMAIL_FROM` estiverem configuradas.
+- Se Resend nao estiver configurado, usa `CONTACT_WEBHOOK_URL` como fallback.
+- Se nenhum canal estiver configurado, retorna `503`.
+
+Endpoint para dados publicos de contato (lidos de variaveis de ambiente):
+
+```http
+GET /api/site-config
+```
+
+## Deploy no Railway
+
+1. Conecte o repositorio no Railway.
+2. Railway vai instalar dependencias e executar `npm run build`.
+3. Configure o start command como `npm run start` (se necessario).
+4. Deploy.
+
+Observacao: o arquivo `nixpacks.toml` ja fixa setup/install/build/start para este projeto.
+
+Variaveis de ambiente opcionais:
+
+- `SITE_CONTACT_EMAIL`: email exibido na secao de contato.
+- `SITE_WHATSAPP_NUMBER`: numero com DDI+DDD (ex.: `5568999999999`).
+- `SITE_WHATSAPP_MESSAGE`: texto pre-preenchido no link do WhatsApp.
+- `SITE_INSTAGRAM_URL`: URL do Instagram da empresa.
+- `RESEND_API_KEY`: chave da Resend para envio de email.
+- `CONTACT_EMAIL_FROM`: remetente validado na Resend (ex.: `site@seudominio.com`).
+- `CONTACT_EMAIL_TO`: destinatario dos leads (se vazio, usa `SITE_CONTACT_EMAIL`).
+- `CONTACT_WEBHOOK_URL`: fallback para envio via webhook.
+- `PORT`: fornecida automaticamente pelo Railway.
+- Arquivo de referencia: `.env.example`
+
+Healthcheck:
+
+- `GET /health`
+
+## Ambiente Local
+
+Requisitos:
+
+- Node.js 18+
+- npm
+
+Executar:
+
+```sh
+npm install
+npm run dev
+```

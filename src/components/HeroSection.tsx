@@ -1,8 +1,9 @@
+import type { MouseEvent } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Code2, Zap, ChevronDown } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
 
-const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+const handleClick = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
   e.preventDefault();
   const el = document.querySelector(href);
   if (el) el.scrollIntoView({ behavior: "smooth" });

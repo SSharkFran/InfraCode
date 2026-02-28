@@ -1,19 +1,65 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
-import { Send, Mail, MessageCircle } from "lucide-react";
+import { Send, Mail, MessageCircle, Instagram } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { usePublicContactConfig } from "@/hooks/use-public-contact-config";
 
 const ContactSection = () => {
   const { toast } = useToast();
   const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [isSending, setIsSending] = useState(false);
+  const publicConfig = usePublicContactConfig();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    toast({
-      title: "Mensagem enviada!",
-      description: "Entraremos em contato em breve. Obrigado!",
-    });
-    setForm({ name: "", email: "", message: "" });
+
+    if (isSending) {
+      return;
+    }
+
+    setIsSending(true);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      const payload = (await response.json().catch(() => null)) as
+        | { message?: string; errors?: string[] }
+        | null;
+
+      if (!response.ok) {
+        const description =
+          payload?.errors?.join(" ") ||
+          payload?.message ||
+          "Nao foi possivel enviar sua mensagem agora.";
+
+        throw new Error(description);
+      }
+
+      toast({
+        title: "Mensagem enviada!",
+        description:
+          payload?.message ||
+          "Entraremos em contato em breve. Obrigado pela mensagem!",
+      });
+      setForm({ name: "", email: "", message: "" });
+    } catch (error) {
+      toast({
+        title: "Erro ao enviar",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Tente novamente em alguns minutos.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -35,22 +81,37 @@ const ContactSection = () => {
             </p>
 
             <div className="space-y-4">
-              <a
-                href="mailto:contato@infracode.tech"
-                className="flex items-center gap-3 text-muted-foreground hover:text-accent transition-colors"
-              >
-                <Mail size={20} />
-                <span>contato@infracode.tech</span>
-              </a>
-              <a
-                href="https://wa.me/5568999999999"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 text-muted-foreground hover:text-accent transition-colors"
-              >
-                <MessageCircle size={20} />
-                <span>WhatsApp</span>
-              </a>
+              {publicConfig.contactEmail && (
+                <a
+                  href={`mailto:${publicConfig.contactEmail}`}
+                  className="flex items-center gap-3 text-muted-foreground hover:text-accent transition-colors"
+                >
+                  <Mail size={20} />
+                  <span>{publicConfig.contactEmail}</span>
+                </a>
+              )}
+              {publicConfig.whatsappUrl && (
+                <a
+                  href={publicConfig.whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 text-muted-foreground hover:text-accent transition-colors"
+                >
+                  <MessageCircle size={20} />
+                  <span>{publicConfig.whatsappDisplay}</span>
+                </a>
+              )}
+              {publicConfig.instagramUrl && (
+                <a
+                  href={publicConfig.instagramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 text-muted-foreground hover:text-accent transition-colors"
+                >
+                  <Instagram size={20} />
+                  <span>Instagram</span>
+                </a>
+              )}
             </div>
           </motion.div>
 
@@ -106,9 +167,10 @@ const ContactSection = () => {
             </div>
             <button
               type="submit"
-              className="w-full inline-flex items-center justify-center gap-2 bg-accent text-accent-foreground px-6 py-3.5 rounded-lg font-semibold hover:bg-orange-dark transition-colors"
+              disabled={isSending}
+              className="w-full inline-flex items-center justify-center gap-2 bg-accent text-accent-foreground px-6 py-3.5 rounded-lg font-semibold hover:bg-orange-dark transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Enviar mensagem
+              {isSending ? "Enviando..." : "Enviar mensagem"}
               <Send size={16} />
             </button>
           </motion.form>
