@@ -69,7 +69,7 @@ const HeroSection = () => {
               onClick={(e) => handleClick(e, "#projetos")}
               className="inline-flex items-center justify-center gap-2 bg-accent text-accent-foreground px-8 py-4 rounded-lg text-base font-semibold hover:bg-orange-dark transition-all hover:scale-105"
             >
-              Conheça nossos projetos
+              Ver ideias de projeto
               <ArrowRight size={18} />
             </a>
             <a

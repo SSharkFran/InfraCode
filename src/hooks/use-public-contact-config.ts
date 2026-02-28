@@ -5,6 +5,7 @@ export type PublicContactConfig = {
   whatsappUrl: string;
   whatsappDisplay: string;
   instagramUrl: string;
+  jurisPocketUrl: string;
 };
 
 const DEFAULT_PUBLIC_CONTACT_CONFIG: PublicContactConfig = {
@@ -13,6 +14,7 @@ const DEFAULT_PUBLIC_CONTACT_CONFIG: PublicContactConfig = {
     "https://wa.me/5568999999999?text=Ola!%20Vim%20pelo%20site%20da%20InfraCode%20e%20gostaria%20de%20conversar%20sobre%20um%20projeto.",
   whatsappDisplay: "+55 (68) 99999-9999",
   instagramUrl: "https://www.instagram.com/infracode_br?igsh=aDVoeHFkZWR1ZWd2",
+  jurisPocketUrl: "",
 };
 
 export const usePublicContactConfig = () => {
@@ -46,6 +48,8 @@ export const usePublicContactConfig = () => {
             payload.data?.whatsappDisplay?.trim() || previous.whatsappDisplay,
           instagramUrl:
             payload.data?.instagramUrl?.trim() || previous.instagramUrl,
+          jurisPocketUrl:
+            payload.data?.jurisPocketUrl?.trim() || previous.jurisPocketUrl,
         }));
       } catch {
         // Keep defaults when API is unavailable.

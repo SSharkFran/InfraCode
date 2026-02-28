@@ -76,6 +76,7 @@ const getPublicContactConfig = () => {
     process.env.SITE_WHATSAPP_MESSAGE ?? DEFAULT_WHATSAPP_MESSAGE
   ).trim();
   const instagramUrl = (process.env.SITE_INSTAGRAM_URL ?? DEFAULT_INSTAGRAM_URL).trim();
+  const jurisPocketUrl = (process.env.SITE_JURISPOCKET_URL ?? "").trim();
 
   const whatsappUrl = whatsappNumber
     ? `https://wa.me/${whatsappNumber}${
@@ -86,6 +87,7 @@ const getPublicContactConfig = () => {
   return {
     contactEmail,
     instagramUrl,
+    jurisPocketUrl,
     whatsappDisplay: formatWhatsAppDisplay(whatsappNumber),
     whatsappNumber,
     whatsappUrl,

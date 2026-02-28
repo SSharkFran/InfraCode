@@ -67,6 +67,7 @@ Variaveis de ambiente opcionais:
 - `SITE_WHATSAPP_NUMBER`: numero com DDI+DDD (ex.: `5568999999999`).
 - `SITE_WHATSAPP_MESSAGE`: texto pre-preenchido no link do WhatsApp.
 - `SITE_INSTAGRAM_URL`: URL do Instagram da empresa.
+- `SITE_JURISPOCKET_URL`: URL publica do JurisPocket para botao "Ver online".
 - `RESEND_API_KEY`: chave da Resend para envio de email.
 - `CONTACT_EMAIL_FROM`: remetente validado na Resend (ex.: `site@seudominio.com`).
 - `CONTACT_EMAIL_TO`: destinatario dos leads (se vazio, usa `SITE_CONTACT_EMAIL`).
