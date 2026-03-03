@@ -1,8 +1,8 @@
 import { useState, useEffect, type MouseEvent } from "react";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import logoLight from "@/assets/infracode-logo-light.png";
-import logoDark from "@/assets/infracode-logo-dark.png";
+import logoForLightBg from "@/assets/infracode-logo-light.png";
+import logoForDarkBg from "@/assets/infracode-logo-dark.png";
 
 const navLinks = [
   { label: "Início", href: "#inicio" },
@@ -30,6 +30,11 @@ const Header = () => {
     setIsOpen(false);
   };
 
+  const logoSrc = scrolled ? logoForLightBg : logoForDarkBg;
+  const logoContainerClass = scrolled
+    ? "bg-card/90 border border-border/80 shadow-sm"
+    : "bg-primary/40 border border-primary-foreground/15 shadow-[0_8px_24px_rgba(0,0,0,0.35)] backdrop-blur-sm";
+
   return (
     <motion.header
       initial={{ y: -100 }}
@@ -42,8 +47,20 @@ const Header = () => {
       }`}
     >
       <div className="container mx-auto flex items-center justify-between h-24 md:h-36 lg:h-40 px-4">
-        <a href="#inicio" onClick={(e) => handleClick(e, "#inicio")} className="flex items-center">
-          <img src={scrolled ? logoLight : logoDark} alt="InfraCode Tecnologia" className="h-20 md:h-32 lg:h-36 object-contain transition-all duration-300" />
+        <a
+          href="#inicio"
+          onClick={(e) => handleClick(e, "#inicio")}
+          className={`flex items-center rounded-lg px-2 py-1 transition-all duration-300 ${logoContainerClass}`}
+        >
+          <img
+            src={logoSrc}
+            alt="InfraCode Tecnologia"
+            className={`h-20 md:h-32 lg:h-36 object-contain transition-all duration-300 ${
+              scrolled
+                ? "drop-shadow-[0_3px_8px_rgba(15,23,42,0.2)]"
+                : "drop-shadow-[0_3px_10px_rgba(0,0,0,0.45)]"
+            }`}
+          />
         </a>
 
         {/* Desktop nav */}

@@ -1,5 +1,5 @@
 import type { MouseEvent } from "react";
-import logoDark from "@/assets/infracode-logo-dark.png";
+import logoForDarkBg from "@/assets/infracode-logo-dark.png";
 import { usePublicContactConfig } from "@/hooks/use-public-contact-config";
 
 const handleClick = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -17,7 +17,13 @@ const Footer = () => {
       <div className="container mx-auto">
         <div className="grid md:grid-cols-3 gap-10 items-start mb-12">
           <div>
-            <img src={logoDark} alt="InfraCode Tecnologia" className="h-20 md:h-32 lg:h-36 mb-5 object-contain" />
+            <div className="inline-flex rounded-lg px-2 py-1 bg-primary-foreground/5 border border-primary-foreground/10 mb-5">
+              <img
+                src={logoForDarkBg}
+                alt="InfraCode Tecnologia"
+                className="h-20 md:h-32 lg:h-36 object-contain drop-shadow-[0_4px_10px_rgba(0,0,0,0.45)]"
+              />
+            </div>
             <p className="text-primary-foreground/60 text-sm leading-relaxed max-w-xs">
               Startup acreana focada em criar soluções digitais modernas, eficientes e acessíveis.
             </p>
