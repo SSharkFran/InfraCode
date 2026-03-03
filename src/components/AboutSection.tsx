@@ -31,8 +31,12 @@ const itemVariants = {
 
 const AboutSection = () => {
   return (
-    <section id="sobre" className="section-padding bg-background scroll-mt-24">
-      <div className="container mx-auto">
+    <section id="sobre" className="about-section section-padding bg-background scroll-mt-24 relative overflow-hidden">
+      <div className="about-divider" aria-hidden />
+      <div className="about-ambient about-ambient--left" aria-hidden />
+      <div className="about-ambient about-ambient--right" aria-hidden />
+      <div className="about-grid-overlay" aria-hidden />
+      <div className="container mx-auto relative z-10">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <motion.div
             initial={{ opacity: 0, x: -40 }}
