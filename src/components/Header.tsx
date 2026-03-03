@@ -46,7 +46,7 @@ const Header = () => {
           : "bg-transparent"
       }`}
     >
-      <div className="container mx-auto flex items-center justify-between h-24 md:h-36 lg:h-40 px-4">
+      <div className="container mx-auto flex items-center justify-between h-20 md:h-28 lg:h-32 px-4">
         <a
           href="#inicio"
           onClick={(e) => handleClick(e, "#inicio")}
@@ -55,7 +55,7 @@ const Header = () => {
           <img
             src={logoSrc}
             alt="InfraCode Tecnologia"
-            className={`h-20 md:h-32 lg:h-36 object-contain transition-all duration-300 ${
+            className={`h-12 md:h-16 lg:h-20 object-contain transition-all duration-300 ${
               scrolled
                 ? "drop-shadow-[0_3px_8px_rgba(15,23,42,0.2)]"
                 : "drop-shadow-[0_3px_10px_rgba(0,0,0,0.45)]"

@@ -21,7 +21,7 @@ const Footer = () => {
               <img
                 src={logoForDarkBg}
                 alt="InfraCode Tecnologia"
-                className="h-20 md:h-32 lg:h-36 object-contain drop-shadow-[0_4px_10px_rgba(0,0,0,0.45)]"
+                className="h-12 md:h-16 lg:h-20 object-contain drop-shadow-[0_4px_10px_rgba(0,0,0,0.45)]"
               />
             </div>
             <p className="text-primary-foreground/60 text-sm leading-relaxed max-w-xs">

@@ -19,6 +19,17 @@ const values = [
   },
 ];
 
+const aboutParticles = [
+  { id: "a1", x: 6, y: 18, size: 8, duration: 8.8, delay: 0.1 },
+  { id: "a2", x: 14, y: 64, size: 6, duration: 7.6, delay: 0.7 },
+  { id: "a3", x: 29, y: 28, size: 7, duration: 9.1, delay: 0.9 },
+  { id: "a4", x: 38, y: 74, size: 5, duration: 8.4, delay: 1.1 },
+  { id: "a5", x: 52, y: 19, size: 7, duration: 9.7, delay: 0.5 },
+  { id: "a6", x: 66, y: 58, size: 6, duration: 8.1, delay: 1.4 },
+  { id: "a7", x: 79, y: 33, size: 7, duration: 9.3, delay: 1.6 },
+  { id: "a8", x: 91, y: 72, size: 5, duration: 7.9, delay: 0.3 },
+];
+
 const containerVariants = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.2 } },
@@ -33,9 +44,32 @@ const AboutSection = () => {
   return (
     <section id="sobre" className="about-section section-padding bg-background scroll-mt-24 relative overflow-hidden">
       <div className="about-divider" aria-hidden />
+      <div className="about-flow about-flow--top" aria-hidden />
+      <div className="about-flow about-flow--bottom" aria-hidden />
       <div className="about-ambient about-ambient--left" aria-hidden />
       <div className="about-ambient about-ambient--right" aria-hidden />
       <div className="about-grid-overlay" aria-hidden />
+      <div className="about-particles" aria-hidden>
+        {aboutParticles.map((particle) => (
+          <motion.span
+            key={particle.id}
+            className="about-particle"
+            style={{
+              left: `${particle.x}%`,
+              top: `${particle.y}%`,
+              width: particle.size,
+              height: particle.size,
+            }}
+            animate={{ y: [0, -14, 0], x: [0, 7, 0], opacity: [0.15, 0.48, 0.15] }}
+            transition={{
+              duration: particle.duration,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: particle.delay,
+            }}
+          />
+        ))}
+      </div>
       <div className="container mx-auto relative z-10">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <motion.div
