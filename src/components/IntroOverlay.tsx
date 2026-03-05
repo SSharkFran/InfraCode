@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import "./IntroOverlay.css";
 
-const SESSION_KEY = "infracode.intro.played.v1";
-
 const INTRO_COPY = ["Tiramos do papel.", "Viramos produto.", "Colocamos no ar."];
 
 const INTRO_TIMING_MS = {
@@ -25,15 +23,7 @@ const shouldPlayIntro = () => {
     return false;
   }
 
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    return false;
-  }
-
-  try {
-    return window.sessionStorage.getItem(SESSION_KEY) !== "1";
-  } catch {
-    return true;
-  }
+  return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 };
 
 const getZoomTarget = (screenRect: DOMRect): ZoomState => {
@@ -70,13 +60,6 @@ const IntroOverlay = () => {
 
     finishedRef.current = true;
     document.body.classList.remove("intro-lock-scroll");
-
-    try {
-      window.sessionStorage.setItem(SESSION_KEY, "1");
-    } catch {
-      // Keep going even if sessionStorage is blocked.
-    }
-
     setIsVisible(false);
   }, []);
 
