@@ -63,7 +63,7 @@ const ContactSection = () => {
   };
 
   return (
-    <section id="contato" className="section-padding bg-secondary scroll-mt-24">
+    <section id="contato" className="section-padding bg-secondary/70 scroll-mt-24">
       <div className="container mx-auto">
         <div className="grid lg:grid-cols-2 gap-16 items-start">
           <motion.div
@@ -121,7 +121,7 @@ const ContactSection = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="bg-card rounded-xl border border-border p-8 space-y-5"
+            className="bg-card/[0.96] rounded-xl border border-white/10 p-8 space-y-5 shadow-[0_14px_30px_rgba(0,0,0,0.3)]"
           >
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1.5">
@@ -133,7 +133,7 @@ const ContactSection = () => {
                 required
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 transition-shadow"
+                className="w-full px-4 py-3 rounded-lg border border-white/10 bg-background/85 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 transition-shadow"
                 placeholder="Seu nome"
               />
             </div>
@@ -147,7 +147,7 @@ const ContactSection = () => {
                 required
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 transition-shadow"
+                className="w-full px-4 py-3 rounded-lg border border-white/10 bg-background/85 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 transition-shadow"
                 placeholder="seu@email.com"
               />
             </div>
@@ -161,7 +161,7 @@ const ContactSection = () => {
                 required
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 transition-shadow"
+                className="w-full px-4 py-3 rounded-lg border border-white/10 bg-background/85 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 transition-shadow"
                 placeholder="(68) 99999-9999"
               />
             </div>
@@ -175,14 +175,14 @@ const ContactSection = () => {
                 rows={4}
                 value={form.message}
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
-                className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 transition-shadow resize-none"
+                className="w-full px-4 py-3 rounded-lg border border-white/10 bg-background/85 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 transition-shadow resize-none"
                 placeholder="Conte-nos sobre o seu projeto..."
               />
             </div>
             <button
               type="submit"
               disabled={isSending}
-              className="w-full inline-flex items-center justify-center gap-2 bg-accent text-accent-foreground px-6 py-3.5 rounded-lg font-semibold hover:bg-orange-dark transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full inline-flex items-center justify-center gap-2 bg-accent text-accent-foreground px-6 py-3.5 rounded-lg font-semibold hover:bg-brand-blue-strong transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isSending ? "Enviando..." : "Enviar mensagem"}
               <Send size={16} />

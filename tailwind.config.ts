@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        heading: ["Space Grotesk", "sans-serif"],
-        body: ["Inter", "sans-serif"],
+        heading: ["Sora", "sans-serif"],
+        body: ["Manrope", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -51,15 +51,12 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        navy: {
-          DEFAULT: "hsl(var(--navy))",
-          light: "hsl(var(--navy-light))",
-          dark: "hsl(var(--navy-dark))",
-        },
-        orange: {
-          DEFAULT: "hsl(var(--orange))",
-          light: "hsl(var(--orange-light))",
-          dark: "hsl(var(--orange-dark))",
+        brand: {
+          blue: "hsl(var(--brand-blue))",
+          "blue-soft": "hsl(var(--brand-blue-soft))",
+          "blue-strong": "hsl(var(--brand-blue-strong))",
+          ink: "hsl(var(--brand-ink))",
+          "ink-soft": "hsl(var(--brand-ink-soft))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",

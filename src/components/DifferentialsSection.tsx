@@ -11,7 +11,7 @@ const differentials = [
 
 const DifferentialsSection = () => {
   return (
-    <section id="diferenciais" className="section-padding bg-primary text-primary-foreground scroll-mt-24">
+    <section id="diferenciais" className="section-padding bg-brand-ink-soft text-primary-foreground scroll-mt-24">
       <div className="container mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -37,7 +37,7 @@ const DifferentialsSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={`p-7 rounded-xl border border-primary-foreground/10 bg-primary-foreground/5 backdrop-blur-sm hover:bg-primary-foreground/10 transition-colors ${
+              className={`p-7 rounded-xl border border-primary-foreground/[0.12] bg-primary-foreground/[0.06] backdrop-blur-sm hover:bg-primary-foreground/[0.12] transition-colors ${
                 index === 4 ? "sm:col-span-2 lg:col-span-1" : ""
               }`}
             >

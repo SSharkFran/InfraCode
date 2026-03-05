@@ -22,7 +22,7 @@ const cardVariants = {
 
 const ServicesSection = () => {
   return (
-    <section id="servicos" className="section-padding bg-secondary scroll-mt-24">
+    <section id="servicos" className="section-padding bg-secondary/70 scroll-mt-24">
       <div className="container mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -52,7 +52,7 @@ const ServicesSection = () => {
               key={service.title}
               variants={cardVariants}
               whileHover={{ scale: 1.04, y: -6 }}
-              className="group p-8 bg-card rounded-xl border border-border shadow-sm hover:shadow-xl transition-shadow cursor-default"
+              className="group p-8 bg-card/[0.96] rounded-xl border border-white/10 shadow-[0_10px_24px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_36px_rgba(123,156,255,0.22)] transition-shadow cursor-default"
             >
               <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center mb-5 group-hover:bg-accent group-hover:text-accent-foreground transition-colors duration-300">
                 <service.icon size={28} className="text-accent group-hover:text-accent-foreground transition-colors duration-300" />

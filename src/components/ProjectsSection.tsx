@@ -62,7 +62,7 @@ const ProjectsSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="group relative p-8 bg-card rounded-xl border border-border hover-lift overflow-hidden"
+              className="group relative p-8 bg-card/[0.96] rounded-xl border border-white/10 hover-lift overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-bl-[100px] transition-all group-hover:bg-accent/10" />
               <div className="relative">
@@ -94,7 +94,7 @@ const ProjectsSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="mt-10 p-8 md:p-10 bg-secondary rounded-2xl border border-border"
+          className="mt-10 p-8 md:p-10 bg-secondary/70 rounded-2xl border border-white/10"
         >
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div className="max-w-2xl">
@@ -126,7 +126,7 @@ const ProjectsSection = () => {
                     href={publicConfig.jurisPocketUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-orange-dark transition-colors"
+                    className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-brand-blue-strong transition-colors"
                   >
                     Ver JurisPocket online
                     <ExternalLink size={16} />
@@ -134,7 +134,7 @@ const ProjectsSection = () => {
                 ) : null}
                 <a
                   href="#contato"
-                  className="inline-flex items-center gap-2 border border-border text-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-background transition-colors"
+                  className="inline-flex items-center gap-2 border border-white/15 text-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-card transition-colors"
                 >
                   Quero tirar minha ideia do papel
                   <ArrowRight size={16} />
@@ -142,7 +142,7 @@ const ProjectsSection = () => {
               </div>
             </div>
 
-            <div className="md:max-w-sm p-5 rounded-xl bg-card border border-border">
+            <div className="md:max-w-sm p-5 rounded-xl bg-card/[0.96] border border-white/10">
               <div className="w-11 h-11 rounded-lg bg-accent/10 flex items-center justify-center mb-4">
                 <Rocket size={20} className="text-accent" />
               </div>

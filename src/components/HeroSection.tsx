@@ -32,7 +32,7 @@ const HeroSection = () => {
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${heroBg})` }}
       />
-      <div className="absolute inset-0 bg-primary/68" />
+      <div className="absolute inset-0 bg-brand-ink/[0.78]" />
       <div className="hero-aurora" aria-hidden />
       <div className="hero-grid-overlay" aria-hidden />
       <div className="hero-orb hero-orb--left" aria-hidden />
@@ -70,7 +70,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="inline-flex items-center gap-2 bg-accent/20 border border-accent/30 rounded-full px-4 py-1.5 mb-8"
+            className="inline-flex items-center gap-2 bg-accent/[0.16] border border-accent/35 rounded-full px-4 py-1.5 mb-8"
           >
             <Zap size={14} className="text-accent" />
             <span className="text-sm font-medium text-accent">Startup Acreana de Tecnologia</span>
@@ -91,7 +91,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.6 }}
-            className="text-lg md:text-xl text-primary-foreground/80 max-w-2xl mx-auto mb-10 font-light"
+            className="text-lg md:text-xl text-primary-foreground/75 max-w-2xl mx-auto mb-10 font-light"
           >
             Desenvolvimento de software, plataformas digitais e automação de processos para impulsionar o seu negócio.
           </motion.p>
@@ -105,7 +105,7 @@ const HeroSection = () => {
             <a
               href="#projetos"
               onClick={(e) => handleClick(e, "#projetos")}
-              className="inline-flex items-center justify-center gap-2 bg-accent text-accent-foreground px-8 py-4 rounded-lg text-base font-semibold hover:bg-orange-dark transition-all hover:scale-105"
+              className="inline-flex items-center justify-center gap-2 bg-accent text-accent-foreground px-8 py-4 rounded-lg text-base font-semibold hover:bg-brand-blue-strong transition-all hover:scale-105"
             >
               Ver ideias de projeto
               <ArrowRight size={18} />
@@ -113,7 +113,7 @@ const HeroSection = () => {
             <a
               href="#contato"
               onClick={(e) => handleClick(e, "#contato")}
-              className="inline-flex items-center justify-center gap-2 border border-primary-foreground/30 text-primary-foreground px-8 py-4 rounded-lg text-base font-semibold hover:bg-primary-foreground/10 transition-all hover:scale-105"
+              className="inline-flex items-center justify-center gap-2 border border-primary-foreground/35 text-primary-foreground px-8 py-4 rounded-lg text-base font-semibold hover:bg-primary-foreground/10 transition-all hover:scale-105"
             >
               <Code2 size={18} />
               Entre em contato
