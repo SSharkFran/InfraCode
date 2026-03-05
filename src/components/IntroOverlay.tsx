@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from "re
 import "./IntroOverlay.css";
 
 const INTRO_COPY = ["Tiramos do papel.", "Viramos produto.", "Colocamos no ar."];
+const MOBILE_VIEWPORT_QUERY = "(max-width: 768px)";
 
 const INTRO_TIMING_MS = {
   loadingStart: 1200,
@@ -26,6 +27,14 @@ const shouldPlayIntro = () => {
   return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 };
 
+const isMobileViewport = () => {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  return window.matchMedia(MOBILE_VIEWPORT_QUERY).matches;
+};
+
 const getZoomTarget = (screenRect: DOMRect): ZoomState => {
   const viewportWidth = window.innerWidth;
   const viewportHeight = window.innerHeight;
@@ -45,6 +54,7 @@ const getZoomTarget = (screenRect: DOMRect): ZoomState => {
 
 const IntroOverlay = () => {
   const [isVisible, setIsVisible] = useState(() => shouldPlayIntro());
+  const [isMobile, setIsMobile] = useState(() => isMobileViewport());
   const [isZooming, setIsZooming] = useState(false);
   const [isFading, setIsFading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -66,6 +76,32 @@ const IntroOverlay = () => {
   const handleSkip = useCallback(() => {
     finishIntro();
   }, [finishIntro]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return undefined;
+    }
+
+    const mediaQuery = window.matchMedia(MOBILE_VIEWPORT_QUERY);
+    const handleViewportChange = (event: MediaQueryListEvent) => {
+      setIsMobile(event.matches);
+    };
+
+    setIsMobile(mediaQuery.matches);
+    if (typeof mediaQuery.addEventListener === "function") {
+      mediaQuery.addEventListener("change", handleViewportChange);
+    } else {
+      mediaQuery.addListener(handleViewportChange);
+    }
+
+    return () => {
+      if (typeof mediaQuery.removeEventListener === "function") {
+        mediaQuery.removeEventListener("change", handleViewportChange);
+      } else {
+        mediaQuery.removeListener(handleViewportChange);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!isVisible) {
@@ -140,6 +176,49 @@ const IntroOverlay = () => {
     "--intro-zoom-scale": zoom.scale.toString(),
   } as CSSProperties;
 
+  const screenContent = (
+    <>
+      <div className="intro-screen__reflection" />
+      <div className="intro-screen__noise" />
+      <div className="intro-screen__ui">
+        <div className="intro-screen__toolbar">
+          <span className="intro-screen__dot" />
+          <span className="intro-screen__dot" />
+          <span className="intro-screen__dot" />
+          <span className="intro-screen__toolbar-title" />
+        </div>
+        <div className="intro-screen__panels">
+          <span className="intro-screen__panel intro-screen__panel--wide" />
+          <span className="intro-screen__panel intro-screen__panel--thin" />
+          <span className="intro-screen__panel intro-screen__panel--mid" />
+          <span className="intro-screen__panel intro-screen__panel--thin" />
+        </div>
+      </div>
+
+      <div className="intro-phrases">
+        {INTRO_COPY.map((line, index) => (
+          <p
+            key={line}
+            className="intro-phrase"
+            style={{ animationDelay: `${1.35 + index * 0.47}s` }}
+          >
+            {line}
+          </p>
+        ))}
+      </div>
+
+      <div className="intro-loading" role="status" aria-label="Carregando">
+        <div className="intro-loading__meta">
+          <span>Preparando deploy</span>
+          <span>{progress}%</span>
+        </div>
+        <div className="intro-loading__track">
+          <span className="intro-loading__bar" style={{ width: `${progress}%` }} />
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <div id="introOverlay" className={`intro-overlay ${isFading ? "intro-overlay--fade" : ""}`}>
       <div className="intro-overlay__bg" aria-hidden>
@@ -157,60 +236,40 @@ const IntroOverlay = () => {
         style={zoomVars}
         aria-hidden
       >
-        <div className="intro-notebook">
-          <div className="intro-notebook__lid">
-            <div className="intro-notebook__bezel">
-              <div className="intro-notebook__camera" />
-              <div className="intro-notebook__screen" ref={screenRef}>
-                <div className="intro-screen__reflection" />
-                <div className="intro-screen__noise" />
-                <div className="intro-screen__ui">
-                  <div className="intro-screen__toolbar">
-                    <span className="intro-screen__dot" />
-                    <span className="intro-screen__dot" />
-                    <span className="intro-screen__dot" />
-                    <span className="intro-screen__toolbar-title" />
-                  </div>
-                  <div className="intro-screen__panels">
-                    <span className="intro-screen__panel intro-screen__panel--wide" />
-                    <span className="intro-screen__panel intro-screen__panel--thin" />
-                    <span className="intro-screen__panel intro-screen__panel--mid" />
-                    <span className="intro-screen__panel intro-screen__panel--thin" />
-                  </div>
-                </div>
-
-                <div className="intro-phrases">
-                  {INTRO_COPY.map((line, index) => (
-                    <p
-                      key={line}
-                      className="intro-phrase"
-                      style={{ animationDelay: `${1.35 + index * 0.47}s` }}
-                    >
-                      {line}
-                    </p>
-                  ))}
-                </div>
-
-                <div className="intro-loading" role="status" aria-label="Carregando">
-                  <div className="intro-loading__meta">
-                    <span>Preparando deploy</span>
-                    <span>{progress}%</span>
-                  </div>
-                  <div className="intro-loading__track">
-                    <span className="intro-loading__bar" style={{ width: `${progress}%` }} />
-                  </div>
+        {isMobile ? (
+          <div className="intro-phone">
+            <div className="intro-phone__button intro-phone__button--up" />
+            <div className="intro-phone__button intro-phone__button--down" />
+            <div className="intro-phone__button intro-phone__button--power" />
+            <div className="intro-phone__frame">
+              <div className="intro-phone__bezel">
+                <div className="intro-phone__notch" />
+                <div className="intro-phone__screen" ref={screenRef}>
+                  {screenContent}
                 </div>
               </div>
             </div>
+            <div className="intro-phone__shadow" />
           </div>
+        ) : (
+          <div className="intro-notebook">
+            <div className="intro-notebook__lid">
+              <div className="intro-notebook__bezel">
+                <div className="intro-notebook__camera" />
+                <div className="intro-notebook__screen" ref={screenRef}>
+                  {screenContent}
+                </div>
+              </div>
+            </div>
 
-          <div className="intro-notebook__hinge" />
-          <div className="intro-notebook__base">
-            <div className="intro-notebook__keyboard" />
-            <div className="intro-notebook__trackpad" />
+            <div className="intro-notebook__hinge" />
+            <div className="intro-notebook__base">
+              <div className="intro-notebook__keyboard" />
+              <div className="intro-notebook__trackpad" />
+            </div>
+            <div className="intro-notebook__shadow" />
           </div>
-          <div className="intro-notebook__shadow" />
-        </div>
+        )}
       </div>
     </div>
   );
