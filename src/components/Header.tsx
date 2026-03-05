@@ -1,7 +1,7 @@
 import { useState, useEffect, type MouseEvent } from "react";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import logoIcon from "@/assets/infracode-icon.png";
+import logoNoBorder from "@/assets/logo-sem-bordao.png";
 
 const navLinks = [
   { label: "Início", href: "#inicio" },
@@ -40,7 +40,7 @@ const Header = () => {
           : "bg-brand-ink/[0.58] backdrop-blur-sm"
       }`}
     >
-      <div className="container mx-auto flex items-center justify-between h-16 md:h-24 lg:h-28 px-4">
+      <div className="container mx-auto flex items-center justify-between h-16 md:h-20 lg:h-24 px-4">
         <a
           href="#inicio"
           onClick={(e) => handleClick(e, "#inicio")}
@@ -50,9 +50,9 @@ const Header = () => {
               : "bg-white/[0.03] border border-white/10"
           }`}
         >
-          <div className="w-[56px] h-[37px] md:w-[62px] md:h-[41px]">
+          <div className="w-[136px] h-[30px] sm:w-[158px] sm:h-[35px] md:w-[198px] md:h-[44px] lg:w-[236px] lg:h-[52px]">
             <img
-              src={logoIcon}
+              src={logoNoBorder}
               alt="InfraCode Tecnologia"
               className={`w-full h-full object-cover object-center transition-all duration-300 ${
                 scrolled
@@ -61,9 +61,6 @@ const Header = () => {
               }`}
             />
           </div>
-          <span className="hidden sm:inline-block ml-2.5 font-heading font-semibold tracking-wide text-primary-foreground/90">
-            INFRACODE
-          </span>
         </a>
 
         {/* Desktop nav */}

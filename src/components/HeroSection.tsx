@@ -60,18 +60,18 @@ const HeroSection = () => {
         ))}
       </div>
 
-      <div className="relative z-10 container mx-auto text-center px-4 pt-20">
+      <div className="relative z-10 container mx-auto text-center px-4 pt-28 md:pt-36 lg:pt-40">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="max-w-4xl mx-auto"
+          className="max-w-5xl mx-auto"
         >
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.18, duration: 0.55 }}
-            className="mx-auto mb-6 w-[280px] h-[62px] sm:w-[360px] sm:h-[80px] lg:w-[500px] lg:h-[112px]"
+            className="mx-auto mb-5 w-[220px] h-[50px] sm:w-[300px] sm:h-[68px] md:w-[360px] md:h-[80px] lg:w-[420px] lg:h-[94px]"
           >
             <img
               src={logoHorizontal}
@@ -94,11 +94,11 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.7 }}
-            className="text-4xl md:text-5xl lg:text-7xl font-heading font-bold text-primary-foreground leading-tight mb-6"
+            className="text-balance text-4xl md:text-[3.35rem] lg:text-[4.8rem] font-heading font-bold text-primary-foreground leading-[1.02] mb-6 mx-auto max-w-5xl"
           >
-            Transformamos ideias em{" "}
-            <span className="text-accent">soluções tecnológicas</span>{" "}
-            inteligentes
+            Transformamos ideias em
+            <br className="hidden md:block" />
+            <span className="text-accent"> soluções tecnológicas</span> inteligentes
           </motion.h1>
 
           <motion.p

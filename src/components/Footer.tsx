@@ -15,10 +15,10 @@ const Footer = () => {
   return (
     <footer className="bg-brand-ink text-primary-foreground py-16 px-4">
       <div className="container mx-auto">
-        <div className="grid md:grid-cols-3 gap-10 items-start mb-12">
-          <div>
+        <div className="grid gap-10 md:grid-cols-[1.15fr_0.9fr_0.9fr] md:gap-8 lg:gap-12 items-start mb-12">
+          <div className="max-w-sm">
             <div className="inline-flex rounded-xl px-3 py-1.5 bg-primary-foreground/5 border border-primary-foreground/15 mb-5">
-              <div className="w-[270px] h-[60px] sm:w-[340px] sm:h-[76px] lg:w-[410px] lg:h-[92px]">
+              <div className="w-[210px] h-[47px] sm:w-[240px] sm:h-[54px] lg:w-[280px] lg:h-[63px]">
                 <img
                   src={logoBrand}
                   alt="InfraCode Tecnologia"
@@ -26,9 +26,6 @@ const Footer = () => {
                 />
               </div>
             </div>
-            <p className="text-primary-foreground/78 text-sm sm:text-base font-medium mb-3">
-              Seu projeto, nosso código.
-            </p>
             <p className="text-primary-foreground/65 text-sm leading-relaxed max-w-xs">
               Startup acreana focada em criar soluções digitais modernas, eficientes e acessíveis.
             </p>
@@ -38,7 +35,7 @@ const Footer = () => {
             <h4 className="font-heading font-semibold text-sm mb-4 uppercase tracking-wider text-primary-foreground/80">
               Navegação
             </h4>
-            <nav className="flex flex-col gap-2">
+            <nav className="grid gap-2.5 md:max-w-[190px]">
               {[
                 { label: "Início", href: "#inicio" },
                 { label: "Sobre", href: "#sobre" },
@@ -64,22 +61,35 @@ const Footer = () => {
               Contato
             </h4>
             {publicConfig.contactEmail && (
-              <p className="text-sm text-primary-foreground/65 mb-1">
+              <a
+                href={`mailto:${publicConfig.contactEmail}`}
+                className="text-sm text-primary-foreground/65 hover:text-accent transition-colors mb-2 inline-block"
+              >
                 {publicConfig.contactEmail}
-              </p>
+              </a>
+            )}
+            {publicConfig.whatsappUrl && (
+              <a
+                href={publicConfig.whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-primary-foreground/65 hover:text-accent transition-colors mb-2 inline-block"
+              >
+                WhatsApp
+              </a>
             )}
             {publicConfig.instagramUrl && (
               <a
                 href={publicConfig.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-primary-foreground/65 hover:text-accent transition-colors mb-1 inline-block"
+                className="text-sm text-primary-foreground/65 hover:text-accent transition-colors mb-2 inline-block"
               >
                 Instagram
               </a>
             )}
             <p className="text-sm text-primary-foreground/65">Rio Branco, Acre — Brasil</p>
-            <p className="text-sm text-primary-foreground/65">CNPJ: 65.389.435/0001-15</p>
+            <p className="text-sm text-primary-foreground/65 mt-2">CNPJ: 65.389.435/0001-15</p>
           </div>
         </div>
 
