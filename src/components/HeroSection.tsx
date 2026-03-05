@@ -69,9 +69,13 @@ const HeroSection = () => {
         >
           <motion.div
             initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.18, duration: 0.55 }}
-            className="mx-auto mb-5 w-[220px] h-[50px] sm:w-[300px] sm:h-[68px] md:w-[360px] md:h-[80px] lg:w-[420px] lg:h-[94px]"
+            animate={{ opacity: 1, y: [0, -4, 0], scale: [1, 1.012, 1] }}
+            transition={{
+              opacity: { delay: 0.18, duration: 0.55 },
+              y: { delay: 0.8, duration: 7.5, repeat: Infinity, ease: "easeInOut" },
+              scale: { delay: 0.8, duration: 7.5, repeat: Infinity, ease: "easeInOut" },
+            }}
+            className="mx-auto mb-5 w-[250px] h-[56px] sm:w-[340px] sm:h-[76px] md:w-[430px] md:h-[96px] lg:w-[520px] lg:h-[116px]"
           >
             <img
               src={logoHorizontal}
@@ -143,7 +147,7 @@ const HeroSection = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, y: [0, 8, 0] }}
         transition={{ delay: 1.2, y: { repeat: Infinity, duration: 1.5 } }}
-        className="hidden md:block absolute bottom-10 left-1/2 -translate-x-1/2 z-10 text-primary-foreground/60 hover:text-accent transition-colors cursor-pointer"
+        className="hidden md:block absolute bottom-2 md:bottom-3 lg:bottom-4 left-1/2 -translate-x-1/2 z-10 text-primary-foreground/60 hover:text-accent transition-colors cursor-pointer"
       >
         <ChevronDown size={32} />
       </motion.a>
