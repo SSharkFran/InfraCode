@@ -60,7 +60,7 @@ const HeroSection = () => {
         ))}
       </div>
 
-      <div className="relative z-10 container mx-auto text-center px-4 pt-28 md:pt-36 lg:pt-40">
+      <div className="relative z-10 container mx-auto text-center px-4 pt-24 md:pt-32 lg:pt-36 pb-20 md:pb-24">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -118,7 +118,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.6 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center"
+            className="flex flex-col sm:flex-row gap-4 justify-center mb-2 md:mb-4"
           >
             <a
               href="#projetos"
@@ -147,7 +147,7 @@ const HeroSection = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, y: [0, 8, 0] }}
         transition={{ delay: 1.2, y: { repeat: Infinity, duration: 1.5 } }}
-        className="hidden md:block absolute bottom-2 md:bottom-3 lg:bottom-4 left-1/2 -translate-x-1/2 z-10 text-primary-foreground/60 hover:text-accent transition-colors cursor-pointer"
+        className="hidden lg:block absolute bottom-4 lg:bottom-5 xl:bottom-6 left-1/2 -translate-x-1/2 z-10 text-primary-foreground/60 hover:text-accent transition-colors cursor-pointer"
       >
         <ChevronDown size={32} />
       </motion.a>
