@@ -143,7 +143,7 @@ const HeroSection = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, y: [0, 8, 0] }}
         transition={{ delay: 1.2, y: { repeat: Infinity, duration: 1.5 } }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 text-primary-foreground/60 hover:text-accent transition-colors cursor-pointer"
+        className="hidden md:block absolute bottom-10 left-1/2 -translate-x-1/2 z-10 text-primary-foreground/60 hover:text-accent transition-colors cursor-pointer"
       >
         <ChevronDown size={32} />
       </motion.a>

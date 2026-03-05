@@ -1,5 +1,5 @@
 import type { MouseEvent } from "react";
-import logoBrand from "@/assets/infracode-logo-horizontal.png";
+import logoBrand from "@/assets/logo-sem-bordao.png";
 import { usePublicContactConfig } from "@/hooks/use-public-contact-config";
 
 const handleClick = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -18,7 +18,7 @@ const Footer = () => {
         <div className="grid gap-10 md:grid-cols-[1.15fr_0.9fr_0.9fr] md:gap-8 lg:gap-12 items-start mb-12">
           <div className="max-w-sm">
             <div className="inline-flex rounded-xl px-3 py-1.5 bg-primary-foreground/5 border border-primary-foreground/15 mb-5">
-              <div className="w-[210px] h-[47px] sm:w-[240px] sm:h-[54px] lg:w-[280px] lg:h-[63px]">
+              <div className="w-[210px] h-[47px] sm:w-[250px] sm:h-[56px] lg:w-[290px] lg:h-[65px]">
                 <img
                   src={logoBrand}
                   alt="InfraCode Tecnologia"
@@ -63,7 +63,7 @@ const Footer = () => {
             {publicConfig.contactEmail && (
               <a
                 href={`mailto:${publicConfig.contactEmail}`}
-                className="text-sm text-primary-foreground/65 hover:text-accent transition-colors mb-2 inline-block"
+                className="block text-sm text-primary-foreground/65 hover:text-accent transition-colors mb-2"
               >
                 {publicConfig.contactEmail}
               </a>
@@ -73,7 +73,7 @@ const Footer = () => {
                 href={publicConfig.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-primary-foreground/65 hover:text-accent transition-colors mb-2 inline-block"
+                className="block text-sm text-primary-foreground/65 hover:text-accent transition-colors mb-2"
               >
                 WhatsApp
               </a>
@@ -83,7 +83,7 @@ const Footer = () => {
                 href={publicConfig.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-primary-foreground/65 hover:text-accent transition-colors mb-2 inline-block"
+                className="block text-sm text-primary-foreground/65 hover:text-accent transition-colors mb-2"
               >
                 Instagram
               </a>
