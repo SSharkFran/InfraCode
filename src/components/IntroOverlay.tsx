@@ -3,14 +3,16 @@ import "./IntroOverlay.css";
 
 const INTRO_COPY = ["Tiramos do papel.", "Viramos produto.", "Colocamos no ar."];
 const MOBILE_VIEWPORT_QUERY = "(max-width: 768px)";
+const PHRASE_START_DELAY_S = 1.45;
+const PHRASE_STEP_DELAY_S = 0.95;
 
 const INTRO_TIMING_MS = {
   loadingStart: 1200,
-  loadingDuration: 1600,
-  zoomStart: 2800,
-  zoomDuration: 1200,
-  fullScreenHold: 300,
-  fadeDuration: 600,
+  loadingDuration: 2400,
+  zoomStart: 4400,
+  zoomDuration: 1350,
+  fullScreenHold: 420,
+  fadeDuration: 650,
 } as const;
 
 type ZoomState = {
@@ -200,7 +202,7 @@ const IntroOverlay = () => {
           <p
             key={line}
             className="intro-phrase"
-            style={{ animationDelay: `${1.35 + index * 0.47}s` }}
+            style={{ animationDelay: `${PHRASE_START_DELAY_S + index * PHRASE_STEP_DELAY_S}s` }}
           >
             {line}
           </p>

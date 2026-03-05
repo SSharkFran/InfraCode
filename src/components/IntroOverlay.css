@@ -356,7 +356,7 @@
   text-shadow: 0 10px 24px rgba(7, 11, 18, 0.75);
   opacity: 0;
   transform: translate3d(0, 22px, 0);
-  animation: introPhraseInOut 720ms cubic-bezier(0.25, 0.78, 0.18, 1) forwards;
+  animation: introPhraseInOut 980ms cubic-bezier(0.25, 0.78, 0.18, 1) forwards;
 }
 
 .intro-loading {
@@ -367,7 +367,7 @@
   transform: translateX(-50%);
   z-index: 7;
   opacity: 0;
-  animation: introLoadingIn 360ms ease 1200ms forwards, introLoadingOut 240ms ease 2750ms forwards;
+  animation: introLoadingIn 360ms ease 1200ms forwards, introLoadingOut 260ms ease 4200ms forwards;
 }
 
 .intro-loading__meta {
@@ -769,11 +769,11 @@ body.intro-lock-scroll {
     opacity: 0;
     transform: translate3d(0, 22px, 0);
   }
-  28% {
+  22% {
     opacity: 1;
     transform: translate3d(0, 0, 0);
   }
-  72% {
+  80% {
     opacity: 1;
     transform: translate3d(0, 0, 0);
   }
