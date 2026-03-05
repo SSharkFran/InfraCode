@@ -18,7 +18,7 @@ const Footer = () => {
         <div className="grid md:grid-cols-3 gap-10 items-start mb-12">
           <div>
             <div className="inline-flex rounded-xl px-3 py-1.5 bg-primary-foreground/5 border border-primary-foreground/15 mb-5">
-              <div className="w-[185px] h-10 md:w-[235px] md:h-12 lg:w-[270px] lg:h-14">
+              <div className="w-[270px] h-[60px] sm:w-[340px] sm:h-[76px] lg:w-[410px] lg:h-[92px]">
                 <img
                   src={logoBrand}
                   alt="InfraCode Tecnologia"
@@ -26,6 +26,9 @@ const Footer = () => {
                 />
               </div>
             </div>
+            <p className="text-primary-foreground/78 text-sm sm:text-base font-medium mb-3">
+              Seu projeto, nosso código.
+            </p>
             <p className="text-primary-foreground/65 text-sm leading-relaxed max-w-xs">
               Startup acreana focada em criar soluções digitais modernas, eficientes e acessíveis.
             </p>

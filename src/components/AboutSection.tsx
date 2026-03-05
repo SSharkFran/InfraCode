@@ -112,7 +112,7 @@ const AboutSection = () => {
               <motion.div
                 key={value.title}
                 variants={itemVariants}
-                whileHover={{ scale: 1.03, y: -4 }}
+                whileHover={{ scale: 1.02, y: -4 }}
                 className="flex gap-5 p-6 bg-card/95 rounded-xl border border-white/10 shadow-[0_10px_24px_rgba(0,0,0,0.3)] hover:shadow-[0_18px_34px_rgba(123,156,255,0.2)] transition-shadow"
               >
                 <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center">

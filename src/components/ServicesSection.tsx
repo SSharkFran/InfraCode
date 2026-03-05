@@ -51,7 +51,7 @@ const ServicesSection = () => {
             <motion.div
               key={service.title}
               variants={cardVariants}
-              whileHover={{ scale: 1.04, y: -6 }}
+              whileHover={{ scale: 1.02, y: -5 }}
               className="group p-8 bg-card/[0.96] rounded-xl border border-white/10 shadow-[0_10px_24px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_36px_rgba(123,156,255,0.22)] transition-shadow cursor-default"
             >
               <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center mb-5 group-hover:bg-accent group-hover:text-accent-foreground transition-colors duration-300">

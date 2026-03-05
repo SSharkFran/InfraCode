@@ -445,3 +445,25 @@
     opacity: 0.65;
   }
 }
+
+@media (max-width: 640px) {
+  .hero-particles,
+  .about-particles {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-aurora,
+  .hero-grid-overlay,
+  .hero-orb,
+  .hero-particle,
+  .about-divider,
+  .about-flow,
+  .about-ambient,
+  .about-grid-overlay,
+  .about-particle {
+    animation: none !important;
+    transform: none !important;
+  }
+}

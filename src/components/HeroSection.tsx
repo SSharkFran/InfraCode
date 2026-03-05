@@ -2,6 +2,7 @@ import type { MouseEvent } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Code2, Zap, ChevronDown } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
+import logoHorizontal from "@/assets/infracode-logo-horizontal.png";
 
 const heroParticles = [
   { id: "p1", x: 8, y: 20, size: 5, duration: 7.2, delay: 0.1 },
@@ -66,6 +67,19 @@ const HeroSection = () => {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="max-w-4xl mx-auto"
         >
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.18, duration: 0.55 }}
+            className="mx-auto mb-6 w-[280px] h-[62px] sm:w-[360px] sm:h-[80px] lg:w-[500px] lg:h-[112px]"
+          >
+            <img
+              src={logoHorizontal}
+              alt="InfraCode - Seu projeto, nosso código"
+              className="w-full h-full object-cover object-center drop-shadow-[0_8px_20px_rgba(0,0,0,0.45)]"
+            />
+          </motion.div>
+
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
