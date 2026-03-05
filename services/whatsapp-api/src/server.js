@@ -3,7 +3,7 @@ import cors from "cors";
 import express from "express";
 import pino from "pino";
 import qrcode from "qrcode";
-import { mkdir } from "node:fs/promises";
+import { mkdir, rm } from "node:fs/promises";
 import { Boom } from "@hapi/boom";
 import makeWASocket, {
   Browsers,
@@ -31,6 +31,7 @@ const REQUIRE_INTERNAL_NOTIFY =
 
 let socket = null;
 let reconnectTimer = null;
+let resetAuthPromise = null;
 
 const runtimeState = {
   connected: false,
@@ -97,7 +98,7 @@ const dashboardHtml = `<!doctype html>
     textarea { min-height: 80px; resize: vertical; }
     button { background: var(--accent); color: white; border: none; cursor: pointer; font-weight: 600; }
     button.secondary { background: #1f2937; }
-    .actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+    .actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
     .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; white-space: pre-wrap; background: #020617; border: 1px solid #1e293b; border-radius: 10px; padding: 10px; min-height: 80px; }
     .status { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; margin-top: 8px; }
     .dot { width: 10px; height: 10px; border-radius: 999px; background: #ef4444; }
@@ -121,6 +122,7 @@ const dashboardHtml = `<!doctype html>
         <button id="statusBtn" class="secondary">Atualizar Status</button>
         <button id="qrBtn" class="secondary">Atualizar QR</button>
         <button id="reconnectBtn" class="secondary">Reconectar Sessao</button>
+        <button id="resetBtn" class="secondary">Resetar Sessao</button>
       </div>
       <div class="status">
         <span id="statusDot" class="dot"></span>
@@ -157,6 +159,7 @@ const dashboardHtml = `<!doctype html>
     const statusBtn = document.getElementById("statusBtn");
     const qrBtn = document.getElementById("qrBtn");
     const reconnectBtn = document.getElementById("reconnectBtn");
+    const resetBtn = document.getElementById("resetBtn");
     const checkBtn = document.getElementById("checkBtn");
     const sendBtn = document.getElementById("sendBtn");
     const qrImg = document.getElementById("qrImg");
@@ -220,6 +223,17 @@ const dashboardHtml = `<!doctype html>
       await refreshQr();
     }
 
+    async function resetSession() {
+      const response = await fetch("/session/reset", {
+        method: "POST",
+        headers: headers(),
+      });
+      const payload = await response.json();
+      debugOut.textContent = pretty(payload);
+      await refreshStatus();
+      await refreshQr();
+    }
+
     async function sendTest() {
       const payload = {
         to: toInput.value.trim(),
@@ -250,6 +264,7 @@ const dashboardHtml = `<!doctype html>
     statusBtn.addEventListener("click", () => void refreshStatus());
     qrBtn.addEventListener("click", () => void refreshQr());
     reconnectBtn.addEventListener("click", () => void reconnect());
+    resetBtn.addEventListener("click", () => void resetSession());
     checkBtn.addEventListener("click", () => void checkContact());
     sendBtn.addEventListener("click", () => void sendTest());
 
@@ -291,6 +306,44 @@ const scheduleReconnect = () => {
   }, 2000);
 };
 
+const clearReconnectTimer = () => {
+  if (!reconnectTimer) {
+    return;
+  }
+
+  clearTimeout(reconnectTimer);
+  reconnectTimer = null;
+};
+
+const resetAuthState = async () => {
+  if (resetAuthPromise) {
+    await resetAuthPromise;
+    return;
+  }
+
+  resetAuthPromise = (async () => {
+    try {
+      await rm(AUTH_DIR, { recursive: true, force: true });
+      await mkdir(AUTH_DIR, { recursive: true });
+
+      runtimeState.lastQr = null;
+      runtimeState.lastQrAt = null;
+      runtimeState.lastQrDataUrl = null;
+      runtimeState.meId = null;
+    } catch (error) {
+      logger.error({ error, authDir: AUTH_DIR }, "Falha ao resetar credenciais");
+      runtimeState.lastError =
+        error instanceof Error ? `Auth reset failed: ${error.message}` : "Auth reset failed";
+    }
+  })();
+
+  try {
+    await resetAuthPromise;
+  } finally {
+    resetAuthPromise = null;
+  }
+};
+
 const startSocket = async () => {
   if (runtimeState.connecting || runtimeState.connected) {
     return;
@@ -321,6 +374,10 @@ const startSocket = async () => {
 
     sock.ev.on("creds.update", saveCreds);
     sock.ev.on("connection.update", async ({ connection, lastDisconnect, qr }) => {
+      if (socket !== sock) {
+        return;
+      }
+
       if (qr) {
         runtimeState.lastQr = qr;
         runtimeState.lastQrAt = new Date().toISOString();
@@ -364,6 +421,13 @@ const startSocket = async () => {
           },
           "Conexao WhatsApp encerrada",
         );
+
+        if (statusCode === DisconnectReason.loggedOut) {
+          logger.warn("Sessao expirada (401). Limpando auth para gerar novo QR.");
+          await resetAuthState();
+          scheduleReconnect();
+          return;
+        }
 
         if (shouldReconnect) {
           scheduleReconnect();
@@ -459,6 +523,7 @@ app.get("/debug/config", apiKeyGuard, (_req, res) => {
   res.status(200).json({
     ok: true,
     data: {
+      authDir: AUTH_DIR,
       clientAckEnabled: CLIENT_ACK_ENABLED,
       ownerNotifyTo: ownerNumber,
       requireInternalNotify: REQUIRE_INTERNAL_NOTIFY,
@@ -495,6 +560,7 @@ app.get("/session/qr", apiKeyGuard, (_req, res) => {
 app.post("/session/reconnect", apiKeyGuard, async (_req, res) => {
   runtimeState.connected = false;
   runtimeState.connecting = false;
+  clearReconnectTimer();
 
   if (socket) {
     try {
@@ -509,6 +575,29 @@ app.post("/session/reconnect", apiKeyGuard, async (_req, res) => {
   res.status(200).json({
     ok: true,
     message: "Reconexao solicitada.",
+  });
+});
+
+app.post("/session/reset", apiKeyGuard, async (_req, res) => {
+  runtimeState.connected = false;
+  runtimeState.connecting = false;
+  runtimeState.lastError = null;
+  clearReconnectTimer();
+
+  if (socket) {
+    try {
+      socket.end(new Error("manual session reset"));
+    } catch (error) {
+      logger.warn({ error }, "Falha ao encerrar sessao antes do reset");
+    }
+  }
+
+  await resetAuthState();
+  void startSocket();
+
+  res.status(200).json({
+    ok: true,
+    message: "Sessao resetada. Aguarde alguns segundos e atualize o QR.",
   });
 });
 

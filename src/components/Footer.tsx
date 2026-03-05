@@ -1,5 +1,5 @@
 import type { MouseEvent } from "react";
-import logoBrand from "@/assets/infracode-logo-rebrand.svg";
+import logoBrand from "@/assets/infracode-logo-horizontal.png";
 import { usePublicContactConfig } from "@/hooks/use-public-contact-config";
 
 const handleClick = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -18,11 +18,13 @@ const Footer = () => {
         <div className="grid md:grid-cols-3 gap-10 items-start mb-12">
           <div>
             <div className="inline-flex rounded-xl px-3 py-1.5 bg-primary-foreground/5 border border-primary-foreground/15 mb-5">
-              <img
-                src={logoBrand}
-                alt="InfraCode Tecnologia"
-                className="h-11 md:h-14 lg:h-16 object-contain drop-shadow-[0_4px_10px_rgba(0,0,0,0.45)]"
-              />
+              <div className="w-[185px] h-10 md:w-[235px] md:h-12 lg:w-[270px] lg:h-14">
+                <img
+                  src={logoBrand}
+                  alt="InfraCode Tecnologia"
+                  className="w-full h-full object-cover object-center drop-shadow-[0_4px_10px_rgba(0,0,0,0.45)]"
+                />
+              </div>
             </div>
             <p className="text-primary-foreground/65 text-sm leading-relaxed max-w-xs">
               Startup acreana focada em criar soluções digitais modernas, eficientes e acessíveis.

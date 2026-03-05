@@ -10,6 +10,7 @@ API separada para envio de mensagens via WhatsApp Web usando Baileys.
 - `GET /session/qr`: QR atual para login (`x-api-key`).
 - `GET /debug/config`: diagnostico de variaveis de envio (`x-api-key`).
 - `POST /session/reconnect`: reconecta a sessao (`x-api-key`).
+- `POST /session/reset`: limpa credenciais e reinicia para gerar novo QR (`x-api-key`).
 - `POST /contacts/check`: valida se um numero existe no WhatsApp (`x-api-key`).
 - `POST /messages/text`: envia mensagem (`x-api-key`).
 - `POST /lead`: envia lead para numero interno e confirmacao para cliente (`x-api-key`).
@@ -55,3 +56,11 @@ Observacao: o `nixpacks.toml` deste diretorio ja define setup/install/start.
 4. Confirme em `GET /session/status` que `connected=true`.
 
 Tambem pode fazer isso pelo painel em `GET /`.
+
+## Quando aparecer `Disconnected (401)` sem QR
+
+Esse status indica sessao expirada/logada em outro dispositivo.
+
+1. Chame `POST /session/reset` (ou use o botao `Resetar Sessao` no painel).
+2. Aguarde alguns segundos e consulte `GET /session/qr`.
+3. Escaneie o novo QR no WhatsApp do numero oficial.

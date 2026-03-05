@@ -1,7 +1,7 @@
 import { useState, useEffect, type MouseEvent } from "react";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import logoBrand from "@/assets/infracode-logo-rebrand.svg";
+import logoBrand from "@/assets/infracode-logo-horizontal.png";
 
 const navLinks = [
   { label: "Início", href: "#inicio" },
@@ -50,15 +50,17 @@ const Header = () => {
               : "bg-white/[0.03] border border-white/10"
           }`}
         >
-          <img
-            src={logoBrand}
-            alt="InfraCode Tecnologia"
-            className={`h-11 md:h-14 lg:h-16 object-contain transition-all duration-300 ${
-              scrolled
-                ? "drop-shadow-[0_3px_8px_rgba(0,0,0,0.45)]"
-                : "drop-shadow-[0_3px_10px_rgba(0,0,0,0.5)]"
-            }`}
-          />
+          <div className="w-[172px] h-9 md:w-[238px] md:h-12 lg:w-[270px] lg:h-14">
+            <img
+              src={logoBrand}
+              alt="InfraCode Tecnologia"
+              className={`w-full h-full object-cover object-center transition-all duration-300 ${
+                scrolled
+                  ? "drop-shadow-[0_3px_8px_rgba(0,0,0,0.45)]"
+                  : "drop-shadow-[0_3px_10px_rgba(0,0,0,0.5)]"
+              }`}
+            />
+          </div>
         </a>
 
         {/* Desktop nav */}
