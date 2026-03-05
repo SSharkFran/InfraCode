@@ -160,8 +160,24 @@ const IntroOverlay = () => {
         <div className="intro-notebook">
           <div className="intro-notebook__lid">
             <div className="intro-notebook__bezel">
+              <div className="intro-notebook__camera" />
               <div className="intro-notebook__screen" ref={screenRef}>
+                <div className="intro-screen__reflection" />
                 <div className="intro-screen__noise" />
+                <div className="intro-screen__ui">
+                  <div className="intro-screen__toolbar">
+                    <span className="intro-screen__dot" />
+                    <span className="intro-screen__dot" />
+                    <span className="intro-screen__dot" />
+                    <span className="intro-screen__toolbar-title" />
+                  </div>
+                  <div className="intro-screen__panels">
+                    <span className="intro-screen__panel intro-screen__panel--wide" />
+                    <span className="intro-screen__panel intro-screen__panel--thin" />
+                    <span className="intro-screen__panel intro-screen__panel--mid" />
+                    <span className="intro-screen__panel intro-screen__panel--thin" />
+                  </div>
+                </div>
 
                 <div className="intro-phrases">
                   {INTRO_COPY.map((line, index) => (
@@ -188,6 +204,7 @@ const IntroOverlay = () => {
             </div>
           </div>
 
+          <div className="intro-notebook__hinge" />
           <div className="intro-notebook__base">
             <div className="intro-notebook__keyboard" />
             <div className="intro-notebook__trackpad" />
