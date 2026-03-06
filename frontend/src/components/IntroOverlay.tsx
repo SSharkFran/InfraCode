@@ -2,6 +2,12 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from "re
 import "./IntroOverlay.css";
 
 const INTRO_COPY = ["Tiramos do papel.", "Viramos produto.", "Colocamos no ar."];
+const INTRO_DEPLOY_STATUS_COPY = [
+  "Iniciando pipeline de deploy...",
+  "Instalando dependencias do projeto...",
+  "Compilando interface e servicos...",
+  "Publicando release em producao...",
+];
 const MOBILE_VIEWPORT_QUERY = "(max-width: 768px)";
 const PHRASE_START_DELAY_S = 1.45;
 const PHRASE_STEP_DELAY_S = 0.95;
@@ -177,6 +183,12 @@ const IntroOverlay = () => {
     return null;
   }
 
+  const deployStatusIndex = Math.min(
+    INTRO_DEPLOY_STATUS_COPY.length - 1,
+    Math.floor((progress / 100) * INTRO_DEPLOY_STATUS_COPY.length),
+  );
+  const deployStatus = INTRO_DEPLOY_STATUS_COPY[deployStatusIndex];
+
   const zoomVars = {
     "--intro-zoom-x": `${zoom.x}px`,
     "--intro-zoom-y": `${zoom.y}px`,
@@ -222,6 +234,7 @@ const IntroOverlay = () => {
         <div className="intro-loading__track">
           <span className="intro-loading__bar" style={{ width: `${progress}%` }} />
         </div>
+        {!isMobile && <p className="intro-loading__hint">{deployStatus}</p>}
       </div>
     </>
   );

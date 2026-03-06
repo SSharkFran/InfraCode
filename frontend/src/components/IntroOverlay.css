@@ -244,9 +244,19 @@
     0 -46px 70px rgba(1, 4, 10, 0.46) inset;
 }
 
-.intro-notebook__screen .intro-screen__ui,
-.intro-notebook__screen .intro-phrases {
+.intro-notebook__screen .intro-screen__ui {
   display: none;
+}
+
+.intro-notebook__screen .intro-phrases {
+  inset: auto 8% 21%;
+  display: grid;
+  place-items: center;
+}
+
+.intro-notebook__screen .intro-phrase {
+  width: min(78%, 26ch);
+  font-size: clamp(1rem, 1.5vw, 1.48rem);
 }
 
 .intro-notebook__screen .intro-loading {
@@ -458,6 +468,15 @@
   background: linear-gradient(90deg, #a8bfe6 0%, #c4d4f0 55%, #e4ecfb 100%);
   box-shadow: 0 0 12px rgba(169, 190, 225, 0.65);
   transition: width 90ms linear;
+}
+
+.intro-loading__hint {
+  margin: 0.58rem 0 0;
+  text-align: center;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(218, 228, 247, 0.78);
 }
 
 .intro-notebook__hinge {
