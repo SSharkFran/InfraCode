@@ -262,16 +262,31 @@ const IntroOverlay = () => {
           <div className="intro-notebook">
             <div className="intro-notebook__lid">
               <div className="intro-notebook__bezel">
-                <div className="intro-notebook__camera" />
+                <div className="intro-notebook__notch">
+                  <span className="intro-notebook__notch-dot" />
+                  <span className="intro-notebook__notch-dot intro-notebook__notch-dot--camera" />
+                  <span className="intro-notebook__notch-dot" />
+                </div>
                 <div className="intro-notebook__screen" ref={screenRef}>
                   {screenContent}
                 </div>
-                <div className="intro-notebook__brand" />
               </div>
             </div>
 
             <div className="intro-notebook__hinge" />
             <div className="intro-notebook__base">
+              <div className="intro-notebook__keyrow">
+                <span className="intro-notebook__key intro-notebook__key--wide" />
+                <span className="intro-notebook__key" />
+                <span className="intro-notebook__key" />
+                <span className="intro-notebook__key" />
+                <span className="intro-notebook__key" />
+                <span className="intro-notebook__key" />
+                <span className="intro-notebook__key" />
+                <span className="intro-notebook__key" />
+                <span className="intro-notebook__key" />
+                <span className="intro-notebook__key intro-notebook__key--wide" />
+              </div>
               <div className="intro-notebook__speaker intro-notebook__speaker--left" />
               <div className="intro-notebook__speaker intro-notebook__speaker--right" />
               <div className="intro-notebook__keyboard" />
