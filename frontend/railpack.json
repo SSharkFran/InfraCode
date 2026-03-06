@@ -3,16 +3,16 @@
   "steps": {
     "install": {
       "commands": [
-        "if [ -f package.json ]; then npm install --include=dev --no-audit --no-fund; elif [ -f frontend/package.json ]; then cd frontend && npm install --include=dev --no-audit --no-fund; else echo 'package.json not found in /app or /app/frontend' && exit 1; fi"
+        "[ -f package.json ] && npm install --include=dev --no-audit --no-fund || (cd frontend && npm install --include=dev --no-audit --no-fund)"
       ]
     },
     "build": {
       "commands": [
-        "if [ -f package.json ]; then npm run build; elif [ -f frontend/package.json ]; then cd frontend && npm run build; else echo 'package.json not found in /app or /app/frontend' && exit 1; fi"
+        "[ -f package.json ] && npm run build || (cd frontend && npm run build)"
       ]
     }
   },
   "deploy": {
-    "startCommand": "if [ -f package.json ]; then npm run start; elif [ -f frontend/package.json ]; then cd frontend && npm run start; else echo 'package.json not found in /app or /app/frontend' && exit 1; fi"
+    "startCommand": "[ -f package.json ] && npm run start || (cd frontend && npm run start)"
   }
 }
