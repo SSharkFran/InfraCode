@@ -2,28 +2,17 @@
   "$schema": "https://schema.railpack.com",
   "steps": {
     "install": {
-      "commands": ["npm install --include=dev --no-audit --no-fund"],
-      "inputs": [
-        {
-          "local": true,
-          "include": ["package.json", "package-lock.json", "services/whatsapp-api/package.json"]
-        }
+      "commands": [
+        "if [ -f package.json ]; then npm install --include=dev --no-audit --no-fund; elif [ -f frontend/package.json ]; then cd frontend && npm install --include=dev --no-audit --no-fund; else echo 'package.json not found in /app or /app/frontend' && exit 1; fi"
       ]
     },
     "build": {
-      "commands": ["npm run build"],
-      "inputs": [
-        {
-          "step": "install"
-        },
-        {
-          "local": true,
-          "include": ["."]
-        }
+      "commands": [
+        "if [ -f package.json ]; then npm run build; elif [ -f frontend/package.json ]; then cd frontend && npm run build; else echo 'package.json not found in /app or /app/frontend' && exit 1; fi"
       ]
     }
   },
   "deploy": {
-    "startCommand": "npm run start"
+    "startCommand": "if [ -f package.json ]; then npm run start; elif [ -f frontend/package.json ]; then cd frontend && npm run start; else echo 'package.json not found in /app or /app/frontend' && exit 1; fi"
   }
 }
