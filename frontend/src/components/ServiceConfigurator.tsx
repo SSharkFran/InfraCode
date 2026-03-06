@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Globe, Cpu, Workflow, Plug, Check, ArrowRight, X, MessageCircle } from "lucide-react";
+import { Globe, Cpu, Workflow, Plug, Check, ArrowRight, X, MessageCircle, SlidersHorizontal } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import BuildLogChip from "./BuildLogChip";
 
@@ -23,12 +23,20 @@ const features = [
   { id: "responsive", label: "Design Responsivo", weeks: 0.5, price: 600 },
 ];
 
+const priceTiers = [
+  { id: "economico", label: "Econômico", multiplier: 0.6, color: "text-neon-green", border: "border-neon-green/30", bg: "bg-neon-green/10" },
+  { id: "padrao", label: "Padrão", multiplier: 1.0, color: "text-neon-blue", border: "border-neon-blue/30", bg: "bg-neon-blue/10" },
+  { id: "premium", label: "Premium", multiplier: 1.5, color: "text-neon-purple", border: "border-neon-purple/30", bg: "bg-neon-purple/10" },
+  { id: "enterprise", label: "Enterprise", multiplier: 2.2, color: "text-amber-400", border: "border-amber-400/30", bg: "bg-amber-400/10" },
+];
+
 /* ── Component ────────────────────────────────────── */
 const ServiceConfigurator = () => {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [selectedFeatures, setSelectedFeatures] = useState<Set<string>>(new Set());
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", phone: "" });
+  const [priceTier, setPriceTier] = useState("padrao");
 
   const toggleFeature = useCallback((id: string) => {
     setSelectedFeatures((prev) => {
@@ -43,6 +51,9 @@ const ServiceConfigurator = () => {
     const type = serviceTypes.find((s) => s.id === selectedType);
     if (!type) return null;
 
+    const tier = priceTiers.find((t) => t.id === priceTier);
+    const multiplier = tier?.multiplier ?? 1;
+
     let totalWeeks = type.baseWeeks;
     let totalPrice = type.basePrice;
 
@@ -54,6 +65,8 @@ const ServiceConfigurator = () => {
       }
     });
 
+    totalPrice = Math.round(totalPrice * multiplier);
+
     const minWeeks = Math.ceil(totalWeeks);
     const maxWeeks = Math.ceil(totalWeeks * 1.5);
 
@@ -61,8 +74,9 @@ const ServiceConfigurator = () => {
       timeline: `${minWeeks}-${maxWeeks} semanas`,
       priceMin: totalPrice,
       priceMax: Math.ceil(totalPrice * 1.4),
+      tierLabel: tier?.label ?? "Padrão",
     };
-  }, [selectedType, selectedFeatures]);
+  }, [selectedType, selectedFeatures, priceTier]);
 
   const generateWhatsAppLink = () => {
     const type = serviceTypes.find((s) => s.id === selectedType);
@@ -137,6 +151,32 @@ const ServiceConfigurator = () => {
                     {type.label}
                   </p>
                 </motion.button>
+              ))}
+            </div>
+          </div>
+
+          {/* Price tier selector */}
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <SlidersHorizontal size={14} className="text-white/40" />
+              <h3 className="text-sm font-semibold text-white/40 uppercase tracking-wider">Faixa de Preço</h3>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {priceTiers.map((tier) => (
+                <button
+                  key={tier.id}
+                  onClick={() => setPriceTier(tier.id)}
+                  className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 border ${
+                    priceTier === tier.id
+                      ? `${tier.bg} ${tier.color} ${tier.border}`
+                      : "border-white/8 bg-white/[0.02] text-white/40 hover:bg-white/[0.04]"
+                  }`}
+                >
+                  {tier.label}
+                  <span className={`block text-[10px] mt-0.5 ${priceTier === tier.id ? "opacity-70" : "opacity-40"}`}>
+                    {tier.multiplier === 1 ? "base" : `×${tier.multiplier}`}
+                  </span>
+                </button>
               ))}
             </div>
           </div>
