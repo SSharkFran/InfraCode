@@ -2,7 +2,7 @@
   "$schema": "https://schema.railpack.com",
   "steps": {
     "install": {
-      "inputs": ["..."],
+      "inputs": ["."],
       "commands": [
         "if [ -f frontend/package.json ]; then cd frontend; fi; npm install --include=dev --no-audit --no-fund"
       ]
