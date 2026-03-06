@@ -14,7 +14,7 @@
         }
       ],
       "commands": [
-        "APP_DIR=.; [ -f package.json ] || APP_DIR=frontend; [ -f \"$APP_DIR/package.json\" ] || { echo No package.json found in /app or /app/frontend; ls -la; exit 1; }; cd \"$APP_DIR\"; npm install --include=dev --no-audit --no-fund"
+        "npm install --include=dev --no-audit --no-fund"
       ]
     },
     "build": {
@@ -24,11 +24,11 @@
         }
       ],
       "commands": [
-        "APP_DIR=.; [ -f package.json ] || APP_DIR=frontend; [ -f \"$APP_DIR/package.json\" ] || { echo No package.json found in /app or /app/frontend; ls -la; exit 1; }; cd \"$APP_DIR\"; npm run build"
+        "npm run build"
       ]
     }
   },
   "deploy": {
-    "startCommand": "APP_DIR=.; [ -f package.json ] || APP_DIR=frontend; [ -f \"$APP_DIR/package.json\" ] || { echo No package.json found in /app or /app/frontend; ls -la; exit 1; }; cd \"$APP_DIR\"; npm run start"
+    "startCommand": "npm run start"
   }
 }
