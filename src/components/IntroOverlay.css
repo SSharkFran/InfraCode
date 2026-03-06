@@ -805,9 +805,23 @@ body.intro-lock-scroll {
 }
 
 @media (max-width: 768px) {
+  .intro-overlay__grid {
+    opacity: 0.08;
+  }
+
+  .intro-overlay__glow,
+  .intro-screen__noise {
+    display: none;
+  }
+
+  .intro-overlay__skip {
+    backdrop-filter: none;
+  }
+
   .intro-phone {
     width: min(78vw, 360px);
     height: min(74vh, 640px);
+    filter: none;
   }
 
   .intro-phone__button--up {

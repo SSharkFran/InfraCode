@@ -128,14 +128,19 @@ const IntroOverlay = () => {
       const elapsed = now - animationStart;
 
       if (elapsed <= INTRO_TIMING_MS.loadingStart) {
-        setProgress(0);
-      } else if (elapsed >= loadingEnd) {
-        setProgress(100);
-      } else {
-        const ratio = (elapsed - INTRO_TIMING_MS.loadingStart) / INTRO_TIMING_MS.loadingDuration;
-        setProgress(Math.round(ratio * 100));
+        setProgress((current) => (current === 0 ? current : 0));
+        animationFrame = window.requestAnimationFrame(updateProgress);
+        return;
       }
 
+      if (elapsed >= loadingEnd) {
+        setProgress((current) => (current === 100 ? current : 100));
+        return;
+      }
+
+      const ratio = (elapsed - INTRO_TIMING_MS.loadingStart) / INTRO_TIMING_MS.loadingDuration;
+      const nextProgress = Math.round(ratio * 100);
+      setProgress((current) => (current === nextProgress ? current : nextProgress));
       animationFrame = window.requestAnimationFrame(updateProgress);
     };
 

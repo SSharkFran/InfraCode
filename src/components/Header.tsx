@@ -12,6 +12,9 @@ const navLinks = [
   { label: "Contato", href: "#contato" },
 ];
 
+const HEADER_OFFSET_PX = 96;
+const MOBILE_MENU_SCROLL_DELAY_MS = 180;
+
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -22,11 +25,27 @@ const Header = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const scrollToSection = (href: string) => {
+    const section = document.querySelector<HTMLElement>(href);
+    if (!section) {
+      return;
+    }
+
+    const top = section.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET_PX;
+    window.scrollTo({ top: Math.max(top, 0), behavior: "smooth" });
+  };
+
   const handleClick = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
-    const el = document.querySelector(href);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
-    setIsOpen(false);
+    const shouldWaitForMenuClose = isOpen;
+
+    if (shouldWaitForMenuClose) {
+      setIsOpen(false);
+      window.setTimeout(() => scrollToSection(href), MOBILE_MENU_SCROLL_DELAY_MS);
+      return;
+    }
+
+    scrollToSection(href);
   };
 
   return (
