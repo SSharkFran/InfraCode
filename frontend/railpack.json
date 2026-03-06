@@ -3,7 +3,17 @@
   "steps": {
     "install": {
       "inputs": ["..."],
-      "commands": ["npm install --include=dev --no-audit --no-fund"]
+      "commands": [
+        "if [ -f frontend/package.json ]; then cd frontend; fi; npm install --include=dev --no-audit --no-fund"
+      ]
+    },
+    "build": {
+      "commands": [
+        "if [ -f frontend/package.json ]; then cd frontend; fi; npm run build"
+      ]
     }
+  },
+  "deploy": {
+    "startCommand": "if [ -f frontend/package.json ]; then cd frontend; fi; npm run start"
   }
 }
