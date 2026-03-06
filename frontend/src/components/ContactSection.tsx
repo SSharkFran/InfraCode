@@ -4,8 +4,7 @@ import { Send, Mail, MessageCircle, Instagram } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { usePublicContactConfig } from "@/hooks/use-public-contact-config";
 import BuildLogChip from "./BuildLogChip";
-
-const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL || "";
+import { submitContact } from "@/lib/contact-api";
 
 const ContactSection = () => {
   const { toast } = useToast();
@@ -19,20 +18,7 @@ const ContactSection = () => {
     setIsSending(true);
 
     try {
-      const response = await fetch(`${BACKEND_URL}/api/contact`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(form),
-      });
-
-      const payload = (await response.json().catch(() => null)) as
-        | { message?: string; errors?: string[] }
-        | null;
-
-      if (!response.ok) {
-        const description = payload?.errors?.join(" ") || payload?.message || "Não foi possível enviar sua mensagem agora.";
-        throw new Error(description);
-      }
+      const payload = await submitContact(form);
 
       toast({
         title: "Mensagem enviada!",
@@ -123,6 +109,7 @@ const ContactSection = () => {
                 id="name"
                 type="text"
                 required
+                autoComplete="name"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 className="w-full px-4 py-3 rounded-lg border border-white/10 bg-white/[0.03] text-white text-sm placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-neon-blue/50 transition-shadow"
@@ -135,6 +122,7 @@ const ContactSection = () => {
                 id="email"
                 type="email"
                 required
+                autoComplete="email"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 className="w-full px-4 py-3 rounded-lg border border-white/10 bg-white/[0.03] text-white text-sm placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-neon-blue/50 transition-shadow"
@@ -147,6 +135,8 @@ const ContactSection = () => {
                 id="phone"
                 type="tel"
                 required
+                autoComplete="tel"
+                inputMode="tel"
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
                 className="w-full px-4 py-3 rounded-lg border border-white/10 bg-white/[0.03] text-white text-sm placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-neon-blue/50 transition-shadow"

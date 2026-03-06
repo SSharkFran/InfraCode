@@ -3,8 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, Mail, MessageSquareText, X, Send } from "lucide-react";
 import { usePublicContactConfig } from "@/hooks/use-public-contact-config";
 import { useToast } from "@/hooks/use-toast";
-
-const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL || "";
+import { submitContact } from "@/lib/contact-api";
 
 const dockItems = [
   {
@@ -97,25 +96,7 @@ const ContactDock = () => {
     setIsSending(true);
 
     try {
-      const response = await fetch(`${BACKEND_URL}/api/contact`, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify(contactPayload),
-      });
-
-      const responsePayload = (await response.json().catch(() => null)) as
-        | { message?: string; errors?: string[] }
-        | null;
-
-      if (!response.ok) {
-        const description =
-          responsePayload?.errors?.join(" ") ||
-          responsePayload?.message ||
-          "Não foi possível enviar a mensagem agora.";
-        throw new Error(description);
-      }
+      const responsePayload = await submitContact(contactPayload);
 
       toast({
         title: "Mensagem enviada no WhatsApp",
@@ -158,6 +139,7 @@ const ContactDock = () => {
               onClick={() => handleDockClick(item.id)}
               className={`group relative flex h-11 w-11 items-center justify-center rounded-xl text-white/50 transition-colors ${item.color}`}
               title={item.label}
+              aria-label={item.label}
             >
               <item.icon size={20} />
               {/* Tooltip */}
@@ -186,6 +168,7 @@ const ContactDock = () => {
                   onClick={() => setActivePanel(null)}
                   className="text-white/40 hover:text-white/60"
                   type="button"
+                  aria-label="Fechar painel de WhatsApp"
                 >
                   <X size={16} />
                 </button>
@@ -194,6 +177,7 @@ const ContactDock = () => {
               <form className="space-y-3" onSubmit={handleQuickLeadSubmit}>
                 <input
                   placeholder="Seu nome (opcional)"
+                  autoComplete="name"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   className="w-full px-3 py-2.5 rounded-lg border border-white/10 bg-white/[0.04] text-white text-sm placeholder:text-white/25 focus:outline-none focus:ring-1 focus:ring-neon-blue/50"
@@ -201,6 +185,7 @@ const ContactDock = () => {
                 <input
                   type="email"
                   placeholder="Seu e-mail (opcional)"
+                  autoComplete="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   className="w-full px-3 py-2.5 rounded-lg border border-white/10 bg-white/[0.04] text-white text-sm placeholder:text-white/25 focus:outline-none focus:ring-1 focus:ring-neon-blue/50"
@@ -208,6 +193,8 @@ const ContactDock = () => {
                 <input
                   type="tel"
                   placeholder="WhatsApp com DDD"
+                  autoComplete="tel"
+                  inputMode="tel"
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
                   required
