@@ -2,11 +2,27 @@
   "$schema": "https://schema.railpack.com",
   "steps": {
     "install": {
+      "inputs": [
+        {
+          "step": "packages:mise"
+        },
+        {
+          "local": true,
+          "include": [
+            "."
+          ]
+        }
+      ],
       "commands": [
         "APP_DIR=.; [ -f package.json ] || APP_DIR=frontend; [ -f \"$APP_DIR/package.json\" ] || { echo No package.json found in /app or /app/frontend; ls -la; exit 1; }; cd \"$APP_DIR\"; npm install --include=dev --no-audit --no-fund"
       ]
     },
     "build": {
+      "inputs": [
+        {
+          "step": "install"
+        }
+      ],
       "commands": [
         "APP_DIR=.; [ -f package.json ] || APP_DIR=frontend; [ -f \"$APP_DIR/package.json\" ] || { echo No package.json found in /app or /app/frontend; ls -la; exit 1; }; cd \"$APP_DIR\"; npm run build"
       ]
