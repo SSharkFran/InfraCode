@@ -1,34 +1,143 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, Mail, Calendar, X, Send } from "lucide-react";
+import { MessageCircle, Mail, MessageSquareText, X, Send } from "lucide-react";
 import { usePublicContactConfig } from "@/hooks/use-public-contact-config";
+import { useToast } from "@/hooks/use-toast";
+
+const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL || "";
 
 const dockItems = [
-  { id: "whatsapp", icon: MessageCircle, label: "WhatsApp", color: "hover:text-emerald-400" },
+  {
+    id: "whatsapp",
+    icon: MessageCircle,
+    label: "WhatsApp",
+    color: "hover:text-emerald-400",
+  },
   { id: "email", icon: Mail, label: "Email", color: "hover:text-neon-blue" },
-  { id: "schedule", icon: Calendar, label: "Agendar", color: "hover:text-neon-purple" },
+  {
+    id: "contato",
+    icon: MessageSquareText,
+    label: "Contato",
+    color: "hover:text-neon-purple",
+  },
 ];
 
 const ContactDock = () => {
+  const { toast } = useToast();
   const [activePanel, setActivePanel] = useState<string | null>(null);
-  const [form, setForm] = useState({ name: "", need: "", urgency: "normal" });
+  const [isSending, setIsSending] = useState(false);
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
   const publicConfig = usePublicContactConfig();
 
   const handleDockClick = (id: string) => {
-    if (id === "whatsapp" && publicConfig.whatsappUrl) {
-      window.open(publicConfig.whatsappUrl, "_blank");
+    if (id === "whatsapp") {
+      setActivePanel((current) => (current === id ? null : id));
       return;
     }
+
     if (id === "email" && publicConfig.contactEmail) {
       window.location.href = `mailto:${publicConfig.contactEmail}`;
       return;
     }
-    setActivePanel(activePanel === id ? null : id);
+
+    if (id === "contato") {
+      const target = document.getElementById("contato");
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+    }
+
+    toast({
+      title: "Ação indisponível",
+      description: "Não foi possível abrir este canal agora.",
+      variant: "destructive",
+    });
   };
 
-  const generateSmartMessage = () => {
-    const msg = `Olá! Sou ${form.name}. Preciso de: ${form.need}. Urgência: ${form.urgency === "urgent" ? "Alta" : "Normal"}.`;
-    return `https://wa.me/5568999999999?text=${encodeURIComponent(msg)}`;
+  const handleQuickLeadSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (isSending) return;
+
+    const phoneDigits = form.phone.replace(/\D/g, "");
+    const message = form.message.trim();
+
+    if (phoneDigits.length < 10) {
+      toast({
+        title: "WhatsApp inválido",
+        description: "Informe o número com DDD.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (message.length < 10) {
+      toast({
+        title: "Mensagem curta",
+        description: "Digite pelo menos 10 caracteres.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const fallbackName = "Cliente do site";
+    const fallbackEmail = `lead+${phoneDigits}@infracode.local`;
+    const contactPayload = {
+      name: form.name.trim() || fallbackName,
+      email: form.email.trim() || fallbackEmail,
+      phone: form.phone.trim(),
+      message,
+    };
+
+    setIsSending(true);
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/contact`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(contactPayload),
+      });
+
+      const responsePayload = (await response.json().catch(() => null)) as
+        | { message?: string; errors?: string[] }
+        | null;
+
+      if (!response.ok) {
+        const description =
+          responsePayload?.errors?.join(" ") ||
+          responsePayload?.message ||
+          "Não foi possível enviar a mensagem agora.";
+        throw new Error(description);
+      }
+
+      toast({
+        title: "Mensagem enviada no WhatsApp",
+        description:
+          responsePayload?.message ||
+          "Recebemos seu contato e vamos responder no seu número informado.",
+      });
+
+      setForm({ name: "", email: "", phone: "", message: "" });
+      setActivePanel(null);
+    } catch (error) {
+      toast({
+        title: "Falha no envio",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Tente novamente em instantes.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -38,16 +147,16 @@ const ContactDock = () => {
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 2, duration: 0.6, type: "spring" }}
-        className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50"
+        className="fixed inset-x-0 bottom-4 z-50 flex justify-center px-4"
       >
-        <div className="flex items-center gap-1 px-3 py-2 rounded-2xl border border-white/10 bg-black/60 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+        <div className="flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-black/60 px-3 py-2 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
           {dockItems.map((item) => (
             <motion.button
               key={item.id}
               whileHover={{ scale: 1.2, y: -4 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => handleDockClick(item.id)}
-              className={`relative p-3 rounded-xl text-white/50 ${item.color} transition-colors group`}
+              className={`group relative flex h-11 w-11 items-center justify-center rounded-xl text-white/50 transition-colors ${item.color}`}
               title={item.label}
             >
               <item.icon size={20} />
@@ -62,68 +171,66 @@ const ContactDock = () => {
 
       {/* Quick contact panel */}
       <AnimatePresence>
-        {activePanel === "schedule" && (
+        {activePanel === "whatsapp" && (
           <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.3 }}
-            className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 w-[340px]"
+            className="fixed inset-x-0 bottom-20 z-50 flex justify-center px-4"
           >
-            <div className="rounded-2xl border border-white/10 bg-black/80 backdrop-blur-xl p-5 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+            <div className="w-full max-w-[360px] rounded-2xl border border-white/10 bg-black/80 p-5 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
               <div className="flex items-center justify-between mb-4">
-                <h4 className="text-sm font-semibold text-white">Contato Rápido</h4>
-                <button onClick={() => setActivePanel(null)} className="text-white/40 hover:text-white/60">
+                <h4 className="text-sm font-semibold text-white">WhatsApp Rápido</h4>
+                <button
+                  onClick={() => setActivePanel(null)}
+                  className="text-white/40 hover:text-white/60"
+                  type="button"
+                >
                   <X size={16} />
                 </button>
               </div>
 
-              <div className="space-y-3">
+              <form className="space-y-3" onSubmit={handleQuickLeadSubmit}>
                 <input
-                  placeholder="Seu nome"
+                  placeholder="Seu nome (opcional)"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   className="w-full px-3 py-2.5 rounded-lg border border-white/10 bg-white/[0.04] text-white text-sm placeholder:text-white/25 focus:outline-none focus:ring-1 focus:ring-neon-blue/50"
                 />
                 <input
-                  placeholder="O que você precisa?"
-                  value={form.need}
-                  onChange={(e) => setForm({ ...form, need: e.target.value })}
+                  type="email"
+                  placeholder="Seu e-mail (opcional)"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
                   className="w-full px-3 py-2.5 rounded-lg border border-white/10 bg-white/[0.04] text-white text-sm placeholder:text-white/25 focus:outline-none focus:ring-1 focus:ring-neon-blue/50"
                 />
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setForm({ ...form, urgency: "normal" })}
-                    className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-all ${
-                      form.urgency === "normal"
-                        ? "border-neon-blue/30 bg-neon-blue/10 text-neon-blue"
-                        : "border-white/8 text-white/40 hover:bg-white/5"
-                    }`}
-                  >
-                    Normal
-                  </button>
-                  <button
-                    onClick={() => setForm({ ...form, urgency: "urgent" })}
-                    className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-all ${
-                      form.urgency === "urgent"
-                        ? "border-amber-400/30 bg-amber-400/10 text-amber-400"
-                        : "border-white/8 text-white/40 hover:bg-white/5"
-                    }`}
-                  >
-                    Urgente
-                  </button>
-                </div>
-              </div>
+                <input
+                  type="tel"
+                  placeholder="WhatsApp com DDD"
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  required
+                  className="w-full px-3 py-2.5 rounded-lg border border-white/10 bg-white/[0.04] text-white text-sm placeholder:text-white/25 focus:outline-none focus:ring-1 focus:ring-neon-blue/50"
+                />
+                <textarea
+                  placeholder="Digite sua mensagem"
+                  value={form.message}
+                  onChange={(e) => setForm({ ...form, message: e.target.value })}
+                  required
+                  rows={3}
+                  className="w-full resize-none rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:ring-1 focus:ring-neon-blue/50"
+                />
 
-              <a
-                href={generateSmartMessage()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 w-full inline-flex items-center justify-center gap-2 bg-emerald-500 text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-emerald-600 transition-colors"
-              >
-                <Send size={14} />
-                Enviar via WhatsApp
-              </a>
+                <button
+                  type="submit"
+                  disabled={isSending}
+                  className="mt-1 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-500 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  <Send size={14} />
+                  {isSending ? "Enviando..." : "Enviar via WhatsApp"}
+                </button>
+              </form>
             </div>
           </motion.div>
         )}

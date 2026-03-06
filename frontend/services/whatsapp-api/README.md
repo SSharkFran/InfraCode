@@ -40,7 +40,7 @@ npm run dev
 
 ## Deploy Railway (servico separado)
 
-1. Crie um novo service apontando para o subdiretorio `services/whatsapp-api`.
+1. Crie um novo service apontando para o subdiretorio `frontend/services/whatsapp-api` (caminho relativo a raiz do repositorio).
 2. Build command: `npm install`
 3. Start command: `npm run start`
 4. Configure variaveis de ambiente.
