@@ -5,7 +5,6 @@ import { useMousePosition } from "@/hooks/use-mouse-position";
 import { useMagnetic } from "@/hooks/use-magnetic";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import BuildLogChip from "./BuildLogChip";
-import logoHorizontal from "@/assets/infracode-logo-horizontal.png";
 
 const handleClick = (e: ReactMouseEvent<HTMLAnchorElement>, href: string) => {
   e.preventDefault();
@@ -213,19 +212,6 @@ const HeroSection = () => {
         <div className="grid lg:grid-cols-[1.2fr_1fr] gap-12 lg:gap-16 items-center">
           {/* Left: Copy */}
           <div className="text-center lg:text-left">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="mb-6"
-            >
-              <img
-                src={logoHorizontal}
-                alt="InfraCode"
-                className="h-12 sm:h-14 md:h-16 lg:h-20 object-contain mx-auto lg:mx-0 drop-shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
-              />
-            </motion.div>
-
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
