@@ -266,11 +266,14 @@ const IntroOverlay = () => {
                 <div className="intro-notebook__screen" ref={screenRef}>
                   {screenContent}
                 </div>
+                <div className="intro-notebook__brand" />
               </div>
             </div>
 
             <div className="intro-notebook__hinge" />
             <div className="intro-notebook__base">
+              <div className="intro-notebook__speaker intro-notebook__speaker--left" />
+              <div className="intro-notebook__speaker intro-notebook__speaker--right" />
               <div className="intro-notebook__keyboard" />
               <div className="intro-notebook__trackpad" />
             </div>

@@ -1,6 +1,16 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle2, ExternalLink, Lightbulb, Rocket } from "lucide-react";
 import { usePublicContactConfig } from "@/hooks/use-public-contact-config";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 const projectIdeas = [
   {
@@ -8,29 +18,50 @@ const projectIdeas = [
     description:
       "Centralize solicitações, tarefas e processos internos em uma única plataforma web personalizada.",
     techs: ["React", "Node.js", "PostgreSQL", "Dashboards"],
+    context:
+      "Ideal para empresas que ainda concentram fluxo operacional em grupos de mensagem e planilhas desconectadas.",
+    highlights: ["Abertura e acompanhamento de solicitações", "Kanban de tarefas por time", "Indicadores de SLA e produtividade"],
+    expectedResult:
+      "Padronizar processos internos e dar visibilidade em tempo real do que está parado, em andamento e concluído.",
   },
   {
     name: "Sistema de Atendimento e Leads",
     description:
       "Estruture o funil comercial com formulário inteligente, automações e painel de acompanhamento.",
     techs: ["API", "Integrações", "Automação", "CRM"],
+    context:
+      "Perfeito para operações comerciais que perdem oportunidades por falta de organização entre marketing e vendas.",
+    highlights: ["Captação qualificada com regras por perfil", "Distribuição automática de leads para vendedores", "Histórico completo por contato e etapa"],
+    expectedResult:
+      "Aumentar taxa de conversão e reduzir tempo de resposta para novos leads com processo comercial rastreável.",
   },
   {
     name: "Aplicativo de Agendamento",
     description:
       "App ou web app para reservas, notificações e gestão de horários para equipes de atendimento.",
     techs: ["React", "Supabase", "Push", "Painel Admin"],
+    context:
+      "Recomendado para clínicas, salões, consultorias e serviços recorrentes com alto volume de marcações.",
+    highlights: ["Agenda em tempo real com bloqueios automáticos", "Lembretes por WhatsApp, e-mail ou push", "Regras de cancelamento e remarcação"],
+    expectedResult:
+      "Menos faltas, melhor ocupação da agenda e experiência mais simples para clientes e equipe.",
   },
   {
     name: "Dashboard de Indicadores",
     description:
       "Visualize métricas de vendas, operações e produtividade em tempo real com relatórios claros.",
     techs: ["Analytics", "APIs", "BI", "Alertas"],
+    context:
+      "Para times que tomam decisões com dados atrasados ou dispersos em várias fontes.",
+    highlights: ["Consolidação automática de múltiplas fontes", "Métricas por área com metas e evolução", "Alertas por variação crítica de indicador"],
+    expectedResult:
+      "Decisão mais rápida e previsível baseada em indicadores atualizados e fáceis de interpretar.",
   },
 ];
 
 const ProjectsSection = () => {
   const publicConfig = usePublicContactConfig();
+  const [selectedProject, setSelectedProject] = useState<(typeof projectIdeas)[number] | null>(null);
 
   return (
     <section id="projetos" className="section-padding bg-background scroll-mt-24">
@@ -56,13 +87,16 @@ const ProjectsSection = () => {
 
         <div className="grid sm:grid-cols-2 gap-6">
           {projectIdeas.map((project, index) => (
-            <motion.div
+            <motion.button
               key={project.name}
+              type="button"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="group relative p-8 bg-card/[0.96] rounded-xl border border-white/10 hover-lift overflow-hidden"
+              onClick={() => setSelectedProject(project)}
+              aria-label={`Ver explicação completa da ideia ${project.name}`}
+              className="group relative p-8 bg-card/[0.96] rounded-xl border border-white/10 hover-lift overflow-hidden text-left w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-bl-[100px] transition-all group-hover:bg-accent/10" />
               <div className="relative">
@@ -84,8 +118,12 @@ const ProjectsSection = () => {
                     </span>
                   ))}
                 </div>
+                <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent mt-5">
+                  Ver explicação completa
+                  <ArrowRight size={15} />
+                </span>
               </div>
-            </motion.div>
+            </motion.button>
           ))}
         </div>
 
@@ -155,6 +193,56 @@ const ProjectsSection = () => {
           </div>
         </motion.div>
       </div>
+
+      <Dialog open={Boolean(selectedProject)} onOpenChange={(isOpen) => !isOpen && setSelectedProject(null)}>
+        <DialogContent className="max-w-xl border-white/10 bg-card/[0.98]">
+          {selectedProject ? (
+            <>
+              <DialogHeader>
+                <DialogTitle className="font-heading text-2xl text-foreground">{selectedProject.name}</DialogTitle>
+                <DialogDescription className="text-muted-foreground leading-relaxed">
+                  {selectedProject.context}
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="flex flex-wrap gap-2">
+                {selectedProject.techs.map((tech) => (
+                  <span
+                    key={tech}
+                    className="text-xs font-medium bg-accent/10 text-accent px-3 py-1 rounded-full"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-wide text-accent mb-2">Escopo sugerido</p>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  {selectedProject.highlights.map((item) => (
+                    <li key={item} className="flex items-start gap-2">
+                      <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-accent/80 flex-shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <p className="text-sm leading-relaxed text-foreground/90 bg-secondary/60 border border-white/10 rounded-lg p-4">
+                {selectedProject.expectedResult}
+              </p>
+
+              <div className="flex justify-end pt-1">
+                <DialogClose asChild>
+                  <Button type="button" variant="secondary" className="border border-white/10 px-5">
+                    Fechar
+                  </Button>
+                </DialogClose>
+              </div>
+            </>
+          ) : null}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
