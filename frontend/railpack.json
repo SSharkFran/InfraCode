@@ -3,16 +3,16 @@
   "steps": {
     "install": {
       "commands": [
-        "if [ -f package.json ]; then npm install --include=dev --no-audit --no-fund; elif [ -f frontend/package.json ]; then cd frontend && npm install --include=dev --no-audit --no-fund; else echo 'No package.json found in /app or /app/frontend' && ls -la && exit 1; fi"
+        "APP_DIR=.; [ -f package.json ] || APP_DIR=frontend; [ -f \"$APP_DIR/package.json\" ] || { echo No package.json found in /app or /app/frontend; ls -la; exit 1; }; cd \"$APP_DIR\"; npm install --include=dev --no-audit --no-fund"
       ]
     },
     "build": {
       "commands": [
-        "if [ -f package.json ]; then npm run build; elif [ -f frontend/package.json ]; then cd frontend && npm run build; else echo 'No package.json found in /app or /app/frontend' && ls -la && exit 1; fi"
+        "APP_DIR=.; [ -f package.json ] || APP_DIR=frontend; [ -f \"$APP_DIR/package.json\" ] || { echo No package.json found in /app or /app/frontend; ls -la; exit 1; }; cd \"$APP_DIR\"; npm run build"
       ]
     }
   },
   "deploy": {
-    "startCommand": "if [ -f package.json ]; then npm run start; elif [ -f frontend/package.json ]; then cd frontend && npm run start; else echo 'No package.json found in /app or /app/frontend' && ls -la && exit 1; fi"
+    "startCommand": "APP_DIR=.; [ -f package.json ] || APP_DIR=frontend; [ -f \"$APP_DIR/package.json\" ] || { echo No package.json found in /app or /app/frontend; ls -la; exit 1; }; cd \"$APP_DIR\"; npm run start"
   }
 }
