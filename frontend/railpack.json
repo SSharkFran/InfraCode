@@ -4,15 +4,23 @@
     "install": {
       "commands": ["npm install --include=dev --no-audit --no-fund"],
       "inputs": [
-        "$packages:mise",
-        "package.json",
-        "package-lock.json",
-        "services/whatsapp-api/package.json"
+        {
+          "local": true,
+          "include": ["package.json", "package-lock.json", "services/whatsapp-api/package.json"]
+        }
       ]
     },
     "build": {
       "commands": ["npm run build"],
-      "inputs": ["$steps:install", "."]
+      "inputs": [
+        {
+          "step": "install"
+        },
+        {
+          "local": true,
+          "include": ["."]
+        }
+      ]
     }
   },
   "deploy": {
