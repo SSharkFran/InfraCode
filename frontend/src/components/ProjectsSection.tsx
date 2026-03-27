@@ -25,6 +25,20 @@ function AnimatedMetric({ value, label }: { value: string; label: string }) {
 /* ── Case Timeline ────────────────────────────────── */
 const projectCases = [
   {
+    name: "API WhatsApp InfraCode",
+    problem: "Empresas perdiam vendas e suporte por não conseguirem escalar atendimento e integrar o WhatsApp aos seus sistemas internos com estabilidade.",
+    implementation: {
+      stack: ["Next.js", "Fastify", "Redis", "Baileys", "Prisma"],
+      description: "Plataforma enterprise self-hosted de automação avançada com painel administrativo e filas resilientes (BullMQ).",
+    },
+    results: [
+      { value: "+10k", label: "Msg/dia" },
+      { value: "100%", label: "Entrega" },
+      { value: "0", label: "Sessões caídas" },
+    ],
+    tags: ["WhatsApp", "Enterprise", "Automação"],
+  },
+  {
     name: "JurisPocket",
     problem: "Advogados perdiam horas buscando jurisprudência em múltiplas fontes desconectadas, sem padronização.",
     implementation: {
