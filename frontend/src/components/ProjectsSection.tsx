@@ -52,6 +52,34 @@ const projectCases = [
     ],
     tags: ["B2B", "Workflow", "Dashboard"],
   },
+  {
+    name: "InfraCode API Hub",
+    problem: "Necessidade de unificar e escalar integrações complexas como WhatsApp, consultas CNJ, envio de emails e armazenamento em nuvem de forma resiliente e independente.",
+    implementation: {
+      stack: ["Node.js", "Fastify", "PostgreSQL", "Redis", "Docker"],
+      description: "Microserviços stateless independentes criados em Node.js e Fastify, conectados via Redis e PostgreSQL.",
+    },
+    results: [
+      { value: "4", label: "Serviços integrados" },
+      { value: "99.9%", label: "Uptime" },
+      { value: "+10x", label: "Escalabilidade" },
+    ],
+    tags: ["Microserviços", "API", "Backend"],
+  },
+  {
+    name: "CRM InfraCode",
+    problem: "Dificuldade em gerenciar contratos, faturas e fluxo financeiro integrado de ponta a ponta sem perda de dados ou inconsistências.",
+    implementation: {
+      stack: ["Node.js", "PostgreSQL", "Docker", "TypeScript"],
+      description: "Sistema de CRM focado na integridade de contratos e faturas, garantindo consistência relacional.",
+    },
+    results: [
+      { value: "100%", label: "Controles" },
+      { value: "Zero", label: "Inconsistência" },
+      { value: "+50%", label: "Agilidade" },
+    ],
+    tags: ["CRM", "B2B", "Gestão"],
+  },
 ];
 
 const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
